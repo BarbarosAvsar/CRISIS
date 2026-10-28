@@ -88,6 +88,7 @@ function installData(next, info = null) {
   storage.set("crisis-data", JSON.stringify({ data: next, provenance: info }));
   data = next;
   provenance = info;
+  historyFrom=null;historyTo=null;
   selection = data.series.slice(0, 2).map((s) => s.id);
   const years = data.series.flatMap((s) => s.points.map((p) => p.year));
   from = Math.min(...years);
@@ -208,6 +209,9 @@ function title(k, h, p) {
 function home() {
   const r = ratio(data);
   const years = data.series.flatMap((s) => s.points.map((p) => p.year));
+  const groups=new Set(data.series.map(s=>s.group.trim().toLocaleLowerCase('de')));
+  const missingGroups=['Aktien','Immobilien'].filter(group=>!groups.has(group.toLocaleLowerCase('de')));
+  const missingNotice=missingGroups.length?`<p id="missing-market-groups" class="small muted">${missingGroups.join(' und ')} sind im geladenen Datensatz nicht enthalten. Zusätzliche lizenzierte Reihen können als JSON importiert werden.</p>`:'';
   return `<section class="hero"><div>
     <p class="eyebrow">Wissen, das Werte schützt.</p>
     <span class="badge ${data.kind === "demo" ? "demo" : ""}">${data.kind === "demo" ? "Beispielmodus" : "Historische Berichtsdaten"}</span>
@@ -223,7 +227,7 @@ function home() {
   <div class="grid"><article class="card"><span class="number">01 / KAUFKRAFT</span><h2>Was bleibt real?</h2><p>Berechnen Sie ein eigenes Inflationsszenario und sehen Sie den Unterschied zwischen Geldbetrag und Kaufkraft.</p><a href="#purchasingpower">Szenario berechnen →</a></article>
   <article class="card"><span class="number">02 / MARKTVERGLEICH</span><h2>Was zeigt die Historie?</h2><p>Vergleichen Sie verfügbare Reihen auf gemeinsamer Basis 100. CPI, Quellen und Beobachtungsjahre bleiben sichtbar.</p><a href="#compare">Daten vergleichen →</a></article>
   <article class="card"><span class="number">03 / STRUKTURCHECK</span><h2>Was ist noch ungeklärt?</h2><p>Halten Sie fest, welche Fragen zu Ihrer Vermögensstruktur beantwortet sind und wo Sie Klärungsbedarf sehen.</p><a href="#structure">Struktur prüfen →</a></article></div>
-  <section class="card"><div class="section-heading"><h2>Ihr aktueller Datenbestand</h2><a href="#settings">Daten und Quellen verwalten →</a></div><p>${data.series.length} Reihen: ${data.series.map((s) => escape(s.name)).join(", ")}. Beobachtungsjahre ${Math.min(...years)}–${Math.max(...years)}; gemeinsame Jahre können davon abweichen.</p>${note()}<p>Gold-Silber-Ratio${r ? " " + r.year + ": <strong>" + fmt(r.value) + " : 1</strong>" : " ist für diesen Datenbestand nicht verfügbar."} ${data.kind === "demo" ? "Synthetisches Rechenbeispiel." : "Jahreswerte gleicher Währung und Einheit; kein aktueller Handelskurs."}</p></section>
+  <section class="card"><div class="section-heading"><h2>Ihr aktueller Datenbestand</h2><a href="#settings">Daten und Quellen verwalten →</a></div><p>${data.series.length} Reihen: ${data.series.map((s) => escape(s.name)).join(", ")}. Beobachtungsjahre ${Math.min(...years)}–${Math.max(...years)}; gemeinsame Jahre können davon abweichen.</p>${missingNotice}${note()}<p>Gold-Silber-Ratio${r ? " " + r.year + ": <strong>" + fmt(r.value) + " : 1</strong>" : " ist für diesen Datenbestand nicht verfügbar."} ${data.kind === "demo" ? "Synthetisches Rechenbeispiel." : "Jahreswerte gleicher Währung und Einheit; kein aktueller Handelskurs."}</p></section>
   <div class="section-heading"><h2>Risiken im Zusammenhang verstehen.</h2><a href="#library">Dossier 2026 lesen ↗</a></div><div class="grid four">${content.fields.map((f, i) => `<article class="card"><span class="number">0${i + 1} / WIRKUNGSRAUM</span><h3>${escape(f.title)}</h3><p>${escape(f.text)}</p></article>`).join("")}</div>
   <div class="section-heading"><h2>Makrolage</h2><span class="small muted">Berichtsdaten laut Quelle; keine Echtzeitwerte</span></div><div class="card table-wrap">${macroTable()}</div>
   <section class="card method-link"><h2>Historische Muster einordnen</h2><p>Die drei dokumentierten Jahresfolgen sind ein mechanisches Modell. Ihre Fortschreibung ist keine nachgewiesene Vorhersage von Krisen oder Marktwendepunkten.</p><a href="#cycles">Modell und Grenzen ansehen →</a></section>`;
@@ -244,7 +248,7 @@ function powerResults(result, context) {
 }
 function purchasingPowerView() {
   const years = data.cpi.map((p) => p.year);
-  if (!years.includes(historyFrom)) historyFrom = years[0];
+  if (!years.includes(historyFrom)) historyFrom = years.find(year=>year>=years.at(-1)-10&&year<years.at(-1))??years[0];
   if (!years.includes(historyTo)) historyTo = years.at(-1);
   return (
     title(
@@ -600,6 +604,10 @@ function render() {
       }
     };
     $("#delete-plan").onclick = () => {
+      if(!window.confirm('Alle lokalen Angaben im Strukturcheck einschließlich Notizen und nächstem Prüfschritt löschen? Dies betrifft keine Marktdaten.')){
+        showPlanMessage('Löschen abgebrochen. Ihre Angaben bleiben erhalten.');
+        return;
+      }
       try {
         storage.remove("crisis-plan");
         plan = emptyPlan(planning.questions);

@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 @Composable fun PurchasingPowerScreen(data: MarketData) {
  var scenario by rememberSaveable {mutableStateOf(false)}
  var amount by rememberSaveable {mutableStateOf("10000")}
- var from by rememberSaveable(data) {mutableStateOf((data.cpi.find {it.year==2000}?.year ?: data.cpi.first().year).toString())}
+ var from by rememberSaveable(data) {mutableStateOf((data.cpi.find {it.year>=data.cpi.last().year-10 && it.year<data.cpi.last().year}?.year ?: data.cpi.first().year).toString())}
  var to by rememberSaveable(data) {mutableStateOf(data.cpi.last().year.toString())}
  var rate by rememberSaveable {mutableStateOf("3")}
  var years by rememberSaveable {mutableStateOf("10")}

@@ -30,7 +30,7 @@ struct PurchasingPowerView: View {
    Text("Historische Preisentwicklung nachvollziehen und eine eigene Zukunftsannahme getrennt durchrechnen.")
    Panel(title: "Historischer Kaufkraftvergleich") {
     Text("CPI: \(store.data.cpiRegion). Quelle: \(store.data.source). Datenstand: \(store.data.asOf).").font(.caption)
-    Text("Einheit: CPI-Bezugswährung / Geldeinheiten. Der geladene US-CPI beschreibt US-Kaufkraft und ist keine EUR-Umrechnung.").font(.footnote)
+    Text("Einheit: CPI-Bezugswährung / Geldeinheiten. Die Rechnung verwendet den CPI-Bezugsraum des geladenen Datensatzes: \(store.data.cpiRegion). Es findet keine Währungsumrechnung statt.").font(.footnote)
     TextField("Betrag ohne Tausendertrennzeichen", text: $amount).keyboardType(.decimalPad).textFieldStyle(.roundedBorder).accessibilityIdentifier("power-amount")
     HStack {
      TextField("Startjahr", text: $from).keyboardType(.numberPad).accessibilityLabel("Startjahr Kaufkraft").accessibilityIdentifier("power-from")
@@ -42,8 +42,8 @@ struct PurchasingPowerView: View {
      VStack(alignment: .leading, spacing: 8) {
       Text("\(number(r.amount)) → \(number(r.remainingPower)) Geldeinheiten Kaufkraft").font(.title3)
       Text("Benötigter Betrag im Endjahr für gleiche Kaufkraft: \(number(r.requiredAmount))")
-      Text("Preisänderung: \(number(r.priceChangePercent)) % · Kaufkraftverlust: \(number(r.lossPercent)) %")
-      Text("Ein negativer Kaufkraftverlust bedeutet einen Kaufkraftzuwachs. Die Rechnung unterstellt einen unveränderten nominalen Betrag ohne Zinsen oder Kosten.").font(.caption)
+      Text("Preisänderung: \(number(r.priceChangePercent)) % · \(r.lossPercent < 0 ? "Kaufkraftgewinn" : "Kaufkraftverlust"): \(number(abs(r.lossPercent))) %")
+      Text("Die Rechnung unterstellt einen unveränderten nominalen Betrag ohne Zinsen oder Kosten.").font(.caption)
      }.accessibilityElement(children: .combine).accessibilityIdentifier("power-historical-result")
     case .failure(let e): Note(text: e.localizedDescription).accessibilityIdentifier("power-historical-error")
     }
@@ -58,7 +58,7 @@ struct PurchasingPowerView: View {
      VStack(alignment: .leading, spacing: 8) {
       Text("Verbleibende Kaufkraft: \(number(r.remainingPower)) Geldeinheiten").font(.title3)
       Text("Für gleiche Kaufkraft benötigt: \(number(r.requiredAmount)) Geldeinheiten")
-      Text("Bei \(number(r.ratePercent)) % pro Jahr über \(r.years) Jahre: Preisänderung \(number(r.priceChangePercent)) % · Kaufkraftverlust \(number(r.lossPercent)) %")
+      Text("Bei \(number(r.ratePercent)) % pro Jahr über \(r.years) Jahre: Preisänderung \(number(r.priceChangePercent)) % · \(r.lossPercent < 0 ? "Kaufkraftgewinn" : "Kaufkraftverlust") \(number(abs(r.lossPercent))) %")
      }.accessibilityElement(children: .combine).accessibilityIdentifier("power-scenario-result")
     case .failure(let e): Note(text: e.localizedDescription).accessibilityIdentifier("power-scenario-error")
     }

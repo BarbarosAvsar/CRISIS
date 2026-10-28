@@ -1,6 +1,6 @@
 # CRISIS ©
 
-Deutschsprachige Website sowie eigenständige native Android- und iOS-Anwendungen für Marktvergleiche, Zyklusmodelle und die bereitgestellten CRISIS-Unterlagen. Keine WebViews, kein Cross-Plattform-Framework. JavaScript, Kotlin und Swift implementieren die Rechenlogik unabhängig; versionierte JSON-Inhalte und Referenzfälle sichern die Konsistenz.
+CRISIS ist ein deutschsprachiger Orientierungs- und Beratungsarbeitsplatz für Kaufkrafterhalt und handlungsfähige Vermögensstrukturen: Kaufkraft verstehen, Marktverläufe einordnen, eigene Prüffragen und nächste Schritte festhalten. Website, Android und iOS setzen diesen Ablauf eigenständig mit JavaScript, Kotlin/Compose und Swift/SwiftUI um. Die fachlichen Ziele und die bewusst gestrichenen Leistungsversprechen stehen in [docs/PRODUKT.md](docs/PRODUKT.md).
 
 **Datenstatus:** Neue Installationen starten mit echten Weltbank-Jahresdaten für Gold und Silber von 1960 bis 2024, US-CPI und Makroindikatoren für die fünf dokumentierten Länder. Quelle, Berichtsjahr und Lizenz stehen im Datensatz. Aktuelle Gold-/Silber-Einzelkurse können über den Node-Server ausdrücklich abgerufen werden; Verfügbarkeit und Anbieterzeitstempel sind sichtbar. Börsen- und Immobilienkurse sind damit weiterhin nicht abgedeckt. Synthetische Beispieldaten bleiben als gesonderter Demonstrationsmodus verfügbar. Eine validierte Kurs- oder Krisenprognose wird nicht behauptet.
 
@@ -52,8 +52,10 @@ Den Simulatornamen gegebenenfalls mit `xcrun simctl list devices available` ermi
 
 ## Funktionen auf allen Plattformen
 
-- Übersicht mit vier Wirkungsräumen aus dem Dossier, Gold-Silber-Ratio und Makrolage für Deutschland, Spanien, USA, Frankreich und Großbritannien.
-- Mehrfachvergleich von Gold, Silber, DAX, Dow Jones, LSEG.L und Immobilienpreisen für Berlin, Mallorca/Palma, Paris, London und New York; beliebige weitere importierte Reihen.
+- Zweckorientierte Arbeitsübersicht mit direkten Wegen zu Kaufkraft, Vergleich und Strukturcheck sowie tatsächlicher Datenabdeckung und Makro-Jahreswerten.
+- Historischer Kaufkraftrechner anhand exakter CPI-Jahre, getrennt von eigenen Inflationsannahmen. Benötigter Endbetrag und Kaufkraft eines unveränderten Betrags werden unterschieden; Deflation bleibt erkennbar. Die CPI-Region wird nicht mit einer anderen Währung verwechselt.
+- Fünfteiliger Strukturcheck zu Liquidität, tatsächlichem Zugriff, Abhängigkeiten, Alternativen und Entscheidungen. Eigene Notizen, nächster Prüfschritt, Zuständigkeit und Datum bleiben lokal; explizites Speichern, bestätigtes Löschen und TXT-Bericht für ein Gespräch.
+- Mehrfachvergleich tatsächlich geladener Reihen. Der echte Basisbestand enthält Gold und Silber; DAX, Dow Jones, LSEG.L und Immobilien für die dokumentierten Städte sind über eigene Daten oder den klar bezeichneten Beispielmodus auswertbar. Fehlende echte Reihen werden sichtbar benannt.
 - Jahresfilter, gemeinsame Basis 100, nominale oder CPI-bereinigte Entwicklung, Diagramm, textliche Ergebnisse und CSV-Export.
 - Drei exakt rekonstruierte Jahresfolgen, Jahresprüfung und Szenariofortschreibung bis 2126.
 - Suche und vollständige Lesefassungen aller sechs PDFs sowie 25 dokumentierte Quellenlinks. Die Website bietet zusätzlich Original-PDFs; die Apps lesen die vollständigen extrahierten Texte offline.
@@ -69,11 +71,14 @@ Den Simulatornamen gegebenenfalls mit `xcrun simctl list devices available` ermi
 | `ios/` | SwiftUI, Swift Charts, native Datei- und Exportdialoge |
 | `shared/` | Kanonische Inhalte, Beispiel- und Referenzdaten, JSON-Schema, 13 Original-EPS-Logos |
 | `docs/ANALYSE.md` | Dokumentenanalyse, Entscheidungen und Anforderungszuordnung |
+| `docs/PRODUKT.md` | Zweck, aktueller Kernablauf und angepasste Anforderungen |
 | `docs/DATEN.md` | Importvertrag, Berechnungen und Anbieterintegration |
 | `docs/TESTS.md` | Tatsächliche Ergebnisse, Grenzen und native Abnahme |
 | `tools/` | Lokaler Server und reproduzierbare Hilfsskripte |
 
 `python3 tools/generate-content.py` synchronisiert die kanonischen Inhalte und Plattformbundles aus den archivierten PDF-Texten. `python3 tools/generate-xcode.py` erzeugt das eingecheckte Xcode-Projekt deterministisch. Änderungen an Plattformbundles direkt würden beim nächsten Synchronisieren überschrieben.
+
+Persönliche Strukturchecks werden getrennt von Marktdaten gespeichert: Web `crisis-plan` im lokalen Browser-Speicher, Android in der privaten Datei `structure-plan.json`, iOS in der privaten Datei `planning.json`. Es gibt keine Synchronisation und keine Übertragung dieser Antworten an den Marktdatenadapter. Ein TXT-Export enthält bewusst die eingegebenen Notizen. Marktdaten wiederherstellen löscht den Strukturcheck nicht; dafür gibt es einen eigenen bestätigten Löschvorgang.
 
 ## Vor einer Veröffentlichung
 

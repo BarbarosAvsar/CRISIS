@@ -39,6 +39,7 @@ Der persönliche Strukturcheck und sein Export sind neue Produktentscheidungen, 
 ### Kaufkraft
 
 - Historisch: exakte vorhandene CPI-Start- und Endjahre, keine Interpolation. Endjahr muss nach Startjahr liegen.
+- Der Einstieg zeigt nach Möglichkeit etwa zehn Jahre bis zum letzten Berichtsjahr, anhand tatsächlich vorhandener CPI-Werte; der gesamte verfügbare Zeitraum bleibt wählbar. So beginnt die Rechnung auf allen Plattformen mit demselben überschaubaren Horizont.
 - Faktor `CPI(Ende)/CPI(Start)`. Für Betrag A: benötigter nominaler Endbetrag `A × Faktor`; Kaufkraft des unveränderten Betrags in Einheiten des Startjahrs `A / Faktor`.
 - Preisänderung und Kaufkraftverlust werden nicht verwechselt. CPI 100→121 bedeutet 21 % Preissteigerung und rund 17,36 % Kaufkraftverlust.
 - Die CPI-Region ist sichtbar. Die eingebauten Daten beschreiben die USA; keine Aussage über deutsche/EUR-Kaufkraft und keine Devisenumrechnung.

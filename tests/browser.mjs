@@ -26,6 +26,7 @@ try {
       name: "Vermögen verstehen. Handlungsfähig bleiben.",
     })
     .waitFor();
+  assert.match(await page.locator('#missing-market-groups').innerText(),/Aktien und Immobilien sind im geladenen Datensatz nicht enthalten/);
   await mkdir(path.join(root, "docs/screenshots"), { recursive: true });
   await page.screenshot({
     path: path.join(root, "docs/screenshots/web-desktop.png"),
@@ -36,6 +37,8 @@ try {
     .getByRole("heading", { name: "Kaufkraft sichtbar machen." })
     .waitFor();
   assert.match(await page.locator("#scenario-result").innerText(), /7\.440,94/);
+  assert.equal(await page.locator('#history-from').inputValue(),'2014');
+  assert.equal(await page.locator('#history-to').inputValue(),'2024');
   assert.match(
     await page.locator("#scenario-result").innerText(),
     /keine Prognose/,
@@ -45,7 +48,7 @@ try {
   await page.locator("#scenario-rate").fill("3");
   await page.locator("#history-from").selectOption("2024");
   await page.locator("#history-result [role=alert]").waitFor();
-  await page.locator("#history-from").selectOption("1960");
+  await page.locator("#history-from").selectOption("2014");
   assert.equal(await page.locator("#history-result [role=alert]").count(), 0);
   await page.screenshot({
     path: path.join(root, "docs/screenshots/web-kaufkraft.png"),
@@ -102,6 +105,12 @@ try {
   const reportText = await readFile(await report.path(), "utf8");
   assert.match(reportText, /Reserve und Fälligkeiten prüfen/);
   assert.match(reportText, /2027-01-15/);
+  const savedBeforeDelete=await page.evaluate(()=>localStorage.getItem('crisis-plan'));
+  page.once('dialog',dialog=>dialog.dismiss());
+  await page.getByRole('button',{name:'Lokale Angaben löschen',exact:true}).click();
+  assert.equal(await page.evaluate(()=>localStorage.getItem('crisis-plan')),savedBeforeDelete);
+  assert.equal(await page.locator('#note-liquidity').inputValue(),'Reserve und Fälligkeiten prüfen.');
+  assert.match(await page.locator('#plan-result').innerText(),/Löschen abgebrochen/);
   await page.evaluate(() =>
     localStorage.setItem("crisis-plan", '{"schemaVersion":99}'),
   );
@@ -112,6 +121,7 @@ try {
     await page.evaluate(() => localStorage.getItem("crisis-plan")),
     '{"schemaVersion":99}',
   );
+  page.once('dialog',dialog=>dialog.accept());
   await page
     .getByRole("button", { name: "Lokale Angaben löschen", exact: true })
     .click();
@@ -272,6 +282,8 @@ try {
   await page.locator("#partner-name").fill("");
   await page.getByRole("button", { name: "Branding speichern" }).click();
   await page.getByRole("link", { name: "Übersicht", exact: true }).click();
+  assert.equal(await page.locator('#missing-market-groups').count(),0);
+  assert.match(await page.locator('main').innerText(),/Synthetische Werte/);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.screenshot({
     path: path.join(root, "docs/screenshots/web-mobile.png"),

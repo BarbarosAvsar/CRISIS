@@ -1,5 +1,7 @@
 # Dokumentenanalyse und Umsetzungsplan
 
+Die aktuelle Produktdefinition und Abnahmekriterien stehen in [PRODUKT.md](PRODUKT.md). Die folgende Dokumentenanalyse hält die Herkunft der Ziele fest und wird nicht als zusätzliches, widersprechendes Leistungsversprechen verstanden.
+
 Nachtrag: Die ursprünglichen PDF-Unterlagen enthalten selbst keine Kursreihen. Zusätzlich wurden inzwischen externe echte Weltbank-Reihen und ein öffentlicher HTTPS-Kursadapter integriert; Abdeckung, Zeitstände und Nutzungsbedingungen stehen in [MARKTDATEN.md](MARKTDATEN.md). Native Build- und Simulatorprüfungen werden nun über GitHub Actions durchgeführt. Der aktuelle Nachweis steht in [TESTS.md](TESTS.md).
 
 Stand: 28. Oktober 2026. Alle sechs PDFs wurden vollständig mit `pdftotext -layout` extrahiert; Formel- und Farbdokument wurden zusätzlich visuell geprüft. Das ZIP enthält 13 EPS-Logos (vier Hintergrundvarianten, neun Plain-Varianten); macOS-Metadateien wurden ausgeschlossen. Das originale Midnight-Blue-Logo wird unverändert als Rasterableitung in allen Anwendungen verwendet. Alle EPS-Dateien bleiben unter `shared/logos/` erhalten.
@@ -33,10 +35,10 @@ Es gibt bewusst keine Backend-Abhängigkeit für den lokalen Funktionsumfang. Br
 
 | Anforderung | Website | Android | iOS | Nachweis |
 | --- | --- | --- | --- | --- |
-| Marke, Palette, Partnerbranding | `style.css`, `app.js` | `MainActivity.kt` | `CrisisApp.swift` | Browserpersistenz geprüft; native UI-Abnahme offen |
-| Nominal-/Realvergleich und Diagramm | `core.js`, `draw()` | `CrisisEngine.compare`, `Plot` | `CrisisEngine.compare`, Swift Charts | JS- und Kotlin-Referenztests; Swift-Testfälle angelegt |
+| Marke, Palette, Partnerbranding | `style.css`, `app.js` | `MainActivity.kt` | `CrisisApp.swift` | Browser- und native Simulatorprüfungen; physische Abnahme offen |
+| Nominal-/Realvergleich und Diagramm | `core.js`, `draw()` | `CrisisEngine.compare`, `Plot` | `CrisisEngine.compare`, Swift Charts | JS-, Kotlin- und Swift-Referenztests; siehe TESTS.md |
 | Drei Zyklen und 100-Jahre-Szenario | `cycleYears` | `years` | `years` | Exakte PDF-Sequenzen und Randwerte als Tests |
-| Historische Kursdaten / Live-Makro | JSON-Import | JSON-Import | JSON-Import | Schnittstelle implementiert; reale Datenlieferung fehlt |
+| Historische Kursdaten / aktuelle Kurse | Weltbank-Bestand und HTTPS-Adapter | Bestand, Import, eigener HTTPS-Adapter | Bestand, Import, eigener HTTPS-Adapter | Echte Gold-/Silber- und CPI-Reihen, getrennte Einzelkurse; weitere Assetklassen offen |
 | Gold-Silber-Ratio | `ratio` | `ratio` | `ratio` | Nur gemeinsame Jahre und gleiche Einheit/Währung |
 | Makrolage fünf Länder | Übersicht | Übersicht | Übersicht | Fehlende Werte bleiben „Nicht verfügbar“ |
 | Alle Dokumente und Suche | Wissen/PDFs/Text | Wissen/Text offline | Wissen/Text offline | Sechs Dokumente, vollständige Textseiten |
@@ -51,3 +53,5 @@ Es gibt bewusst keine Backend-Abhängigkeit für den lokalen Funktionsumfang. Br
 - Die Jahresfenster 1926–2126 beziehen sich auf das dokumentierte Wirkungsjahr 2026, nicht auf ein stillschweigend jährlich veränderliches Modell.
 - Reale Indizes nutzen einen ausdrücklich benannten CPI. Keine versteckte Währungsumrechnung und kein Total-Return-Versprechen.
 - API-Anbindung bleibt eine klar bezeichnete externe Voraussetzung. Ein interaktiver lokaler Funktionsumfang ist fertigstellbar; ein vollständiges datenbasiertes Produktions-Frühwarnsystem lässt sich aus diesen Unterlagen allein nicht herleiten.
+
+Die nachfolgende Produktentwicklung ergänzt die Quellenziele um einen historischen Kaufkraftrechner, getrennte Inflationsannahmen und einen lokal gespeicherten Strukturcheck. Diese Werkzeuge unterstützen die im Dossier betonte Vorbereitung und Wiederprüfung eigener Entscheidungen. Eine individuelle Krisenwahrscheinlichkeit wird daraus nicht berechnet.
