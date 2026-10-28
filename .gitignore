@@ -1,0 +1,11 @@
+node_modules/
+.local/
+android/.gradle/
+android/local.properties
+**/build/
+.DS_Store
+ios/DerivedData/
+*.xcuserstate
+__pycache__/
+*.pyc
+artifacts/

@@ -1,0 +1,121 @@
+ÜBERSICHT
+
+
+
+                                               MAKROLAGE
+
+                                               Inflationsrate
+                                               https://de.statista.com/statistik/daten/studie/1046/umfrage/inflationsrate-
+                                               veraenderung-des-verbraucherpreisindexes-zum-vorjahr/
+
+
+                                               https://de.statista.com/statistik/daten/studie/169933/umfrage/inflations-
+                                               rate-in-spanien/
+
+                                               https://de.statista.com/statistik/daten/studie/165718/umfrage/inflationsra-
+                                               te-in-den-usa/
+
+                                               https://de.statista.com/statistik/daten/studie/167248/umfrage/inflations-
+                                               rate-in-frankreich/
+
+                                               https://de.statista.com/statistik/daten/studie/167319/umfrage/inflationsra-
+                                               te-in-grossbritannien/
+
+
+
+
+                                               Rüstungsetat
+                                               https://de.statista.com/statistik/daten/studie/183059/umfrage/militaeraus-
+                                               gaben-der-usa/
+
+
+                                               https://de.statista.com/statistik/daten/studie/183064/umfrage/militaeraus-
+                                               gaben-von-deutschland/
+
+                                               https://de.statista.com/statistik/daten/studie/362568/umfrage/entwicklung-
+                                               der-militaerausgaben-von-spanien/
+
+                                               https://de.statista.com/statistik/daten/studie/322721/umfrage/entwicklung-
+                                               der-militaerausgaben-von-frankreich/
+
+
+
+
+                                               Bruttoinlandsprodukt (BIP)
+EDELMETALLE                                    https://de.statista.com/statistik/daten/studie/1251/umfrage/entwicklung-
+                                               des-bruttoinlandsprodukts-seit-dem-jahr-1991/
+
+Gold
+                                               https://de.statista.com/statistik/daten/studie/19358/umfrage/bruttoinlands-
+https://www.gold.de/kurse/goldpreis/           produkt-in-spanien/
+
+                                               https://de.statista.com/statistik/daten/studie/14396/umfrage/bruttoinlands-
+                                               produkt-in-frankreich/
+Silber
+https://www.gold.de/kurse/silberpreis/         https://de.statista.com/statistik/daten/studie/14418/umfrage/bruttoinland-
+                                               sprodukt-in-den-usa/
+
+                                               https://de.statista.com/statistik/daten/studie/14417/umfrage/bruttoinland-
+                                               sprodukt-in-grossbritannien/
+
+
+Ratio
+https://www.gold.de/kurse/gold-silber-ratio/
+VERGLEICH
+Aktienmärkte:
+
+
+Deutschland // DAX
+yahoo finance Schnitstelle:
+https://de.finance.yahoo.com/quote/%5EGDAXI/?.tsrc=applewf
+
+
+
+
+Amerika // DowJones
+https://de.finance.yahoo.com/quote/%5EDJI/?.tsrc=applewf
+
+
+
+
+England // London
+https://finance.yahoo.com/quote/LSEG.L/
+
+
+
+
+Immobilienpreise:
+
+
+Deutschland // Berlin
+
+https://www.engelvoelkers.com/de-de/immobilienpreise/berlin/
+
+
+
+
+Spanien // Mallorca
+
+https://www.engelvoelkers.com/es/de/immobilienpreise/balearische-inseln/palma-de-mallorca
+
+
+
+
+Frankreich // Paris
+
+https://www.properstar.de/frankreich/paris/immobilienpreise
+
+
+
+
+England // London
+
+https://www.properstar.de/vereinigtes-konigreich/london/immobilienpreise
+
+
+
+
+Amerika // New York
+
+https://www.properstar.de/usa/new-york/immobilienpreise
+

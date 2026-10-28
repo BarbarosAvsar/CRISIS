@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-28",
+  "webUnit": {
+    "passed": 12,
+    "failed": 0,
+    "skipped": 0
+  },
+  "browser": {
+    "passed": true,
+    "viewports": [
+      [
+        1440,
+        1000
+      ],
+      [
+        390,
+        844
+      ]
+    ]
+  },
+  "androidUnit": {
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0
+  },
+  "androidBuild": "passed",
+  "iosProjectParse": "passed",
+  "swiftSyntax": "passed",
+  "iosBuild": "not_run_linux",
+  "iosXCTest": {
+    "defined": 6,
+    "executed": 0
+  },
+  "androidDeviceUI": "not_run",
+  "liveMarketData": "not_configured",
+  "publication": "not_performed"
+}

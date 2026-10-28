@@ -1,0 +1,43 @@
+[
+  {
+    "name": "crisis logos.zip",
+    "sha256": "80683717ddf9f8d042eca88c4aa56e0cf7d5947c2264228fddf16800776d50a3",
+    "bytes": 4487317
+  },
+  {
+    "name": "crisis_daten_api.pdf",
+    "sha256": "0c71c52a0acb01963b408efe396718fe5389e5726370902056079805c22e1916",
+    "bytes": 123275,
+    "pages": 2
+  },
+  {
+    "name": "crisis©_formel_definition.pdf",
+    "sha256": "d103561cc72b770e368162b6f6b954dece6b53a575c5c18fd35d0ea51c8e739c",
+    "bytes": 75600,
+    "pages": 1
+  },
+  {
+    "name": "crisis_brandguide.pdf",
+    "sha256": "53e44ed90a3618c68c55925df16dbc1c0f080591a4f4078af892abd206817091",
+    "bytes": 224873,
+    "pages": 4
+  },
+  {
+    "name": "crisis_wirkungsjahr2026-geopolitische_und_marktstrategische_feldanalyse.pdf",
+    "sha256": "2ddbfb4563edc6c8d042efe5d5f9db82bbee6857bc480b95465d2431bf889c2a",
+    "bytes": 1047182,
+    "pages": 19
+  },
+  {
+    "name": "Farbcode RGB.pdf",
+    "sha256": "9922ae187cc6cbac68bddb2ce8904898a5152a172aaee3a0a1b16277302f8547",
+    "bytes": 57796,
+    "pages": 1
+  },
+  {
+    "name": "crisis_goldverbote_whitepaper.pdf",
+    "sha256": "7dac96fda601d267fbc654e3b317d5e7dd072030776afc6d2816ed2bfccff37b",
+    "bytes": 282804,
+    "pages": 12
+  }
+]

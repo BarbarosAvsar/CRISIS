@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "kind": "import",
+  "asOf": "2026-01-01",
+  "source": "Test fixture",
+  "cpiRegion": "DE",
+  "cpi": [
+    {
+      "year": 2020,
+      "value": 100
+    },
+    {
+      "year": 2021,
+      "value": 110
+    },
+    {
+      "year": 2022,
+      "value": 121
+    }
+  ],
+  "series": [
+    {
+      "id": "gold",
+      "name": "Gold",
+      "group": "Edelmetalle",
+      "unit": "EUR/Feinunze",
+      "currency": "EUR",
+      "points": [
+        {
+          "year": 2020,
+          "value": 10
+        },
+        {
+          "year": 2021,
+          "value": 15
+        },
+        {
+          "year": 2022,
+          "value": 20
+        }
+      ]
+    },
+    {
+      "id": "silver",
+      "name": "Silber",
+      "group": "Edelmetalle",
+      "unit": "EUR/Feinunze",
+      "currency": "EUR",
+      "points": [
+        {
+          "year": 2020,
+          "value": 2
+        },
+        {
+          "year": 2022,
+          "value": 4
+        }
+      ]
+    }
+  ],
+  "macro": []
+}

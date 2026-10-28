@@ -1,0 +1,14 @@
+{
+ "$schema":"https://json-schema.org/draft/2020-12/schema",
+ "title":"CRISIS data interchange v1",
+ "type":"object","required":["schemaVersion","kind","asOf","source","cpiRegion","cpi","series","macro"],
+ "properties":{
+  "schemaVersion":{"const":1},"kind":{"enum":["demo","import"]},
+  "asOf":{"type":"string","format":"date","pattern":"^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},
+  "source":{"type":"string","minLength":1,"maxLength":500},"cpiRegion":{"type":"string","minLength":1,"maxLength":500},
+  "cpi":{"$ref":"#/$defs/points"},
+  "series":{"type":"array","minItems":1,"maxItems":30,"items":{"type":"object","required":["id","name","group","unit","currency","points"],"properties":{"id":{"type":"string","pattern":"^[a-z][a-z0-9-]{0,39}$"},"name":{"$ref":"#/$defs/label"},"group":{"$ref":"#/$defs/label"},"unit":{"$ref":"#/$defs/label"},"currency":{"$ref":"#/$defs/label"},"points":{"$ref":"#/$defs/points"}}}},
+  "macro":{"type":"array","maxItems":20,"items":{"type":"object","required":["country","inflation","military","gdp"],"properties":{"country":{"$ref":"#/$defs/label"},"inflation":{"type":["number","null"],"minimum":-1000000000000000,"maximum":1000000000000000},"military":{"type":["number","null"],"minimum":0,"maximum":1000000000000000},"gdp":{"type":["number","null"],"minimum":0,"maximum":1000000000000000}}}}
+ },
+ "$defs":{"label":{"type":"string","minLength":1,"maxLength":100},"points":{"type":"array","minItems":1,"maxItems":401,"items":{"type":"object","required":["year","value"],"properties":{"year":{"type":"integer","minimum":1800,"maximum":2200},"value":{"type":"number","exclusiveMinimum":0,"maximum":1000000000000000}}}}}
+}
