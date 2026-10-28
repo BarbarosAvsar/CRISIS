@@ -31,7 +31,9 @@ struct MarketProvenance: Codable {
  let quotes: [SpotQuote]?
  static func parse(_ object: Any?) throws -> MarketProvenance? {
   guard let object = object else { return nil }
-  let value = try JSONDecoder().decode(Self.self, from: JSONSerialization.data(withJSONObject: object))
+  var normalized = object as? [String: Any] ?? [:]
+  if let text = normalized["notes"] as? String { normalized["notes"] = [text] }
+  let value = try JSONDecoder().decode(Self.self, from: JSONSerialization.data(withJSONObject: normalized))
   let strings = [value.provider, value.fetchedAt].compactMap { $0 } + (value.notes ?? [])
   guard strings.allSatisfy({ $0.count <= 1000 }), (value.notes?.count ?? 0) <= 30, (value.quotes?.count ?? 0) <= 30 else { throw CrisisError(message: "Ungültige Quellenmetadaten.") }
   for q in value.quotes ?? [] {

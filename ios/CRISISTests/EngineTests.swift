@@ -1,6 +1,14 @@
 import XCTest
 @testable import CRISIS
 final class EngineTests: XCTestCase {
+ func testServerProvenanceAcceptsNotesStringAndFailedQuote() throws {
+  let raw: [String: Any] = ["notes": "Annual history remains separate.", "stale": true,
+   "quotes": [["symbol": "XAG", "price": NSNull(), "error": "HTTP 403"]]]
+  let info = try XCTUnwrap(MarketProvenance.parse(raw))
+  XCTAssertEqual(info.notes, ["Annual history remains separate."])
+  XCTAssertNil(info.quotes?.first?.amount)
+  XCTAssertEqual(info.quotes?.first?.error, "HTTP 403")
+ }
  func fixture(_ name: String) throws -> Data {
   try Data(contentsOf: XCTUnwrap(Bundle(for: Self.self).url(forResource: name, withExtension: "json")))
  }
