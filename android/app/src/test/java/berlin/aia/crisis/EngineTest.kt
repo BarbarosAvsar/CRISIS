@@ -10,4 +10,11 @@ class EngineTest {
  @Test fun rejectsInvalid(){val text=fixture("demo-data.json");assertThrows(IllegalArgumentException::class.java){CrisisEngine.parse(text.replaceFirst("\"value\": 20.0","\"value\": 0.0"))};val d=CrisisEngine.parse(text);assertThrows(IllegalArgumentException::class.java){CrisisEngine.compare(d,emptySet(),1926,2026,false)};assertThrows(IllegalArgumentException::class.java){CrisisEngine.compare(d,setOf("gold"),2026,1926,true)}}
  @Test fun csvEscaping(){assertEquals("\"'=HYPERLINK(\"\"unsafe\"\")\"",CrisisEngine.csvLabel("=HYPERLINK(\"unsafe\")"))}
  @Test fun strictNumericAndCalendarValidation(){val text=fixture("demo-data.json");assertThrows(IllegalArgumentException::class.java){CrisisEngine.parse(text.replaceFirst("\"value\": 20.0","\"value\": \"20\""))};assertThrows(java.time.format.DateTimeParseException::class.java){CrisisEngine.parse(text.replace("2026-01-01","2026-02-30"))}}
+ @Test fun rejectsUnrepresentableCalculatedValues(){
+  val d=CrisisEngine.parse(fixture("golden-data.json"))
+  val extreme=d.copy(series=d.series.map {s->s.copy(points=s.points.mapIndexed {i,p->p.copy(value=if(i==0)Double.MIN_VALUE else 1e15)})})
+  assertThrows(IllegalArgumentException::class.java){CrisisEngine.compare(extreme,setOf("gold"),2020,2022,false)}
+  val ratio=d.copy(series=d.series.map {s->if(s.id=="silver")s.copy(points=s.points.map {it.copy(value=Double.MIN_VALUE)})else s})
+  assertNull(CrisisEngine.ratio(ratio))
+ }
 }

@@ -49,12 +49,21 @@ object CrisisEngine {
   val years=ss.first().points.map { it.year }.filter { y -> y in from..to && ss.all { s -> s.points.any { it.year==y } } && (!real || cpi.containsKey(y)) }
   require(years.size>=2) { "Mindestens zwei gemeinsame Jahreswerte (ggf. mit CPI) erforderlich." }
   val base=years.first()
-  return ss.map { s -> val map=s.points.associate { it.year to it.value };s.copy(points=years.map { y -> Point(y,map.getValue(y)/map.getValue(base)*100*(if(real)cpi.getValue(base)/cpi.getValue(y) else 1.0)) }) }
+  return ss.map { s -> val map=s.points.associate { it.year to it.value };s.copy(points=years.map { y ->
+   val value=map.getValue(y)/map.getValue(base)*100*(if(real)cpi.getValue(base)/cpi.getValue(y) else 1.0)
+   require(value.isFinite() && value>0 && value<=1e15) { "Die Werte erzeugen einen nicht darstellbaren Index. Bitte den Datensatz prüfen." }
+   Point(y,value)
+  }) }
  }
  fun ratio(d: MarketData): Point? {
   val a=d.series.find { it.id=="gold" } ?: return null;val b=d.series.find { it.id=="silver" } ?: return null
   if(a.currency!=b.currency || a.unit!=b.unit)return null
-  return a.points.reversed().firstNotNullOfOrNull { p -> b.points.find { it.year==p.year }?.let { Point(p.year,p.value/it.value) } }
+  for(p in a.points.reversed()) {
+   val q=b.points.find { it.year==p.year } ?: continue
+   val value=p.value/q.value
+   return if(value.isFinite() && value>0)Point(p.year,value) else null
+  }
+  return null
  }
  fun csvLabel(name: String): String { val safe=if(Regex("^[\\s]*[=+\\-@]|^[\\t\\r\\n]").containsMatchIn(name)) "'"+name else name;return "\""+safe.replace("\"","\"\"")+"\"" }
  fun csv(ss: List<Series>)="Asset;Jahr;Index\n"+ss.flatMap { s -> s.points.map { p -> "${csvLabel(s.name)};${p.year};${String.format(java.util.Locale.US,"%.4f",p.value)}" } }.joinToString("\n")+"\n"

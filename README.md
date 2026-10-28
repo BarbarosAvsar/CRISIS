@@ -2,7 +2,9 @@
 
 Deutschsprachige Website sowie eigenständige native Android- und iOS-Anwendungen für Marktvergleiche, Zyklusmodelle und die bereitgestellten CRISIS-Unterlagen. Keine WebViews, kein Cross-Plattform-Framework. JavaScript, Kotlin und Swift implementieren die Rechenlogik unabhängig; versionierte JSON-Inhalte und Referenzfälle sichern die Konsistenz.
 
-**Datenstatus:** Die PDFs liefern Quellenverweise, aber keine historischen Marktwerte, API-Verträge oder Zugangsdaten. Der mitgelieferte Datensatz ist vollständig synthetisch und überall als Beispiel gekennzeichnet. Es gibt keinen Live-Feed und keine validierte Kurs- oder Krisenprognose. Echte lizenzierte Daten lassen sich lokal als JSON importieren.
+**Datenstatus:** Neue Installationen starten mit echten Weltbank-Jahresdaten für Gold und Silber von 1960 bis 2024, US-CPI und Makroindikatoren für die fünf dokumentierten Länder. Quelle, Berichtsjahr und Lizenz stehen im Datensatz. Aktuelle Gold-/Silber-Einzelkurse können über den Node-Server ausdrücklich abgerufen werden; Verfügbarkeit und Anbieterzeitstempel sind sichtbar. Börsen- und Immobilienkurse sind damit weiterhin nicht abgedeckt. Synthetische Beispieldaten bleiben als gesonderter Demonstrationsmodus verfügbar. Eine validierte Kurs- oder Krisenprognose wird nicht behauptet.
+
+Unter Windows das gesamte GitHub-ZIP entpacken und **START-WEB.cmd** doppelklicken. Vorhandenes Python 3.8+ oder Node.js 22+ genügt; Administratorrechte und `npm ci` sind für die historische Website nicht nötig. Der Starter verwendet seinen eigenen Ordner. Für aktuelle Kurse benötigt der Node-Adapter seine Abhängigkeiten (`npm ci --ignore-scripts`) und Internetzugang. Alternativ mit vorhandenem Python aus dem Projektordner `python tools/start-web.py` ausführen. Der lokale Server ist unter `http://127.0.0.1:4173` erreichbar.
 
 ## Starten
 
@@ -32,7 +34,7 @@ cd /workspace/CRISIS
 ./tools/android.sh :app:assembleDebug :app:testDebugUnitTest :app:lintDebug
 ```
 
-Das Hilfsskript nutzt den Gradle Wrapper und übernimmt den bereitgestellten HTTP(S)-Proxy für Java. Für andere Maschinen `ANDROID_HOME` setzen oder `android/local.properties` mit `sdk.dir` anlegen. Das Debug-APK liegt unter `android/app/build/outputs/apk/debug/app-debug.apk`. Installation: `adb install -r <APK>`. Die App benötigt keine Netzwerkberechtigung; Quellenlinks öffnet der Browser.
+Das Hilfsskript nutzt den Gradle Wrapper und übernimmt den bereitgestellten HTTP(S)-Proxy für Java. Für andere Maschinen `ANDROID_HOME` setzen oder `android/local.properties` mit `sdk.dir` anlegen. Das Debug-APK liegt unter `android/app/build/outputs/apk/debug/app-debug.apk`. Installation: `adb install -r <APK>`. Für den optionalen Abruf vom eigenen HTTPS-Datenadapter besitzt die App Internetzugriff; ohne eingetragene Datenquelle bleibt der Betrieb lokal.
 
 ### iOS
 
@@ -75,4 +77,4 @@ Den Simulatornamen gegebenenfalls mit `xcrun simctl list devices available` ermi
 
 ## Vor einer Veröffentlichung
 
-Lizenzierte historische und aktuelle Daten sowie deren Qualitätsnachweise fehlen weiterhin. Die Modellfortschreibung ist kein empirisch validiertes Frühwarnsystem. Betreiber- und Datenschutzangaben, Nutzungsrechte an internen Dossiers und White-Label-Freigaben müssen für den tatsächlichen Betrieb bestätigt werden. App-Store-Signing, Release-Härtung und Tests auf realen Geräten sind separate Release-Schritte. Die Anwendungen wurden nicht öffentlich bereitgestellt.
+Der historische Weltbank-Datensatz deckt Gold, Silber, US-CPI und Makroindikatoren ab; seine Quellen und CC-BY-4.0-Bedingungen einschließlich Weltbank-Zusätzen stehen in `shared/market-data.json`. Daten für Aktien und Immobilien sowie die kommerzielle Eignung eines aktuellen Kursanbieters benötigen zusätzliche Prüfung. Die Modellfortschreibung ist kein empirisch validiertes Frühwarnsystem. Betreiber- und Datenschutzangaben, Nutzungsrechte an internen Dossiers und White-Label-Freigaben müssen für den tatsächlichen Betrieb bestätigt werden. App-Store-Signing, Release-Härtung und Tests auf realen Geräten sind separate Release-Schritte. Die Anwendungen wurden nicht öffentlich bereitgestellt.

@@ -1,0 +1,881 @@
+{
+  "schemaVersion": 1,
+  "kind": "import",
+  "asOf": "2024-12-31",
+  "source": "Weltbank Pink Sheet: Gold/Silber Jahresmittel 1960–2024; US-CPI und Makrolage: World Development Indicators. CC BY 4.0 mit Weltbank-Zusatzbedingungen.",
+  "cpiRegion": "USA (Jahresmittel, 2010=100)",
+  "cpi": [
+    {
+      "year": 1960,
+      "value": 13.5630607803976
+    },
+    {
+      "year": 1961,
+      "value": 13.7082837473334
+    },
+    {
+      "year": 1962,
+      "value": 13.8726149993923
+    },
+    {
+      "year": 1963,
+      "value": 14.0445895655005
+    },
+    {
+      "year": 1964,
+      "value": 14.2242074456579
+    },
+    {
+      "year": 1965,
+      "value": 14.4496852101108
+    },
+    {
+      "year": 1966,
+      "value": 14.8853541109182
+    },
+    {
+      "year": 1967,
+      "value": 15.2980930695778
+    },
+    {
+      "year": 1968,
+      "value": 15.9515964207889
+    },
+    {
+      "year": 1969,
+      "value": 16.8229342224036
+    },
+    {
+      "year": 1970,
+      "value": 17.8051000777325
+    },
+    {
+      "year": 1971,
+      "value": 18.5694314826577
+    },
+    {
+      "year": 1972,
+      "value": 19.1770749495732
+    },
+    {
+      "year": 1973,
+      "value": 20.3617886272072
+    },
+    {
+      "year": 1974,
+      "value": 22.612744614712
+    },
+    {
+      "year": 1975,
+      "value": 24.6802610650346
+    },
+    {
+      "year": 1976,
+      "value": 26.0980958211709
+    },
+    {
+      "year": 1977,
+      "value": 27.7949115401048
+    },
+    {
+      "year": 1978,
+      "value": 29.9159311887722
+    },
+    {
+      "year": 1979,
+      "value": 33.2828110274677
+    },
+    {
+      "year": 1980,
+      "value": 37.7923663165264
+    },
+    {
+      "year": 1981,
+      "value": 41.6980997956942
+    },
+    {
+      "year": 1982,
+      "value": 44.254788345169
+    },
+    {
+      "year": 1983,
+      "value": 45.6764447583298
+    },
+    {
+      "year": 1984,
+      "value": 47.6407764689876
+    },
+    {
+      "year": 1985,
+      "value": 49.3299488738723
+    },
+    {
+      "year": 1986,
+      "value": 50.2662548449057
+    },
+    {
+      "year": 1987,
+      "value": 52.1082935307754
+    },
+    {
+      "year": 1988,
+      "value": 54.2331348364675
+    },
+    {
+      "year": 1989,
+      "value": 56.8509698983362
+    },
+    {
+      "year": 1990,
+      "value": 59.9197604891109
+    },
+    {
+      "year": 1991,
+      "value": 62.4573407534626
+    },
+    {
+      "year": 1992,
+      "value": 64.3490609806524
+    },
+    {
+      "year": 1993,
+      "value": 66.2484245218916
+    },
+    {
+      "year": 1994,
+      "value": 67.9758134970225
+    },
+    {
+      "year": 1995,
+      "value": 69.8828203523109
+    },
+    {
+      "year": 1996,
+      "value": 71.9312285175104
+    },
+    {
+      "year": 1997,
+      "value": 73.6127576083458
+    },
+    {
+      "year": 1998,
+      "value": 74.755433058709
+    },
+    {
+      "year": 1999,
+      "value": 76.3911022652489
+    },
+    {
+      "year": 2000,
+      "value": 78.9707207568715
+    },
+    {
+      "year": 2001,
+      "value": 81.2025684592531
+    },
+    {
+      "year": 2002,
+      "value": 82.490466876552
+    },
+    {
+      "year": 2003,
+      "value": 84.3630788186188
+    },
+    {
+      "year": 2004,
+      "value": 86.6216781201727
+    },
+    {
+      "year": 2005,
+      "value": 89.5605323721101
+    },
+    {
+      "year": 2006,
+      "value": 92.4497050827274
+    },
+    {
+      "year": 2007,
+      "value": 95.0869923788515
+    },
+    {
+      "year": 2008,
+      "value": 98.7374773853445
+    },
+    {
+      "year": 2009,
+      "value": 98.3864199710624
+    },
+    {
+      "year": 2010,
+      "value": 100
+    },
+    {
+      "year": 2011,
+      "value": 103.156841568622
+    },
+    {
+      "year": 2012,
+      "value": 105.291504532867
+    },
+    {
+      "year": 2013,
+      "value": 106.833848874866
+    },
+    {
+      "year": 2014,
+      "value": 108.566932118963
+    },
+    {
+      "year": 2015,
+      "value": 108.695721960693
+    },
+    {
+      "year": 2016,
+      "value": 110.067008934269
+    },
+    {
+      "year": 2017,
+      "value": 112.411557302307
+    },
+    {
+      "year": 2018,
+      "value": 115.15730322479
+    },
+    {
+      "year": 2019,
+      "value": 117.244195476228
+    },
+    {
+      "year": 2020,
+      "value": 118.690501577197
+    },
+    {
+      "year": 2021,
+      "value": 124.266413825837
+    },
+    {
+      "year": 2022,
+      "value": 134.21120616846
+    },
+    {
+      "year": 2023,
+      "value": 139.735793563259
+    },
+    {
+      "year": 2024,
+      "value": 143.857336014607
+    }
+  ],
+  "series": [
+    {
+      "id": "gold",
+      "name": "Gold",
+      "group": "Edelmetalle",
+      "unit": "USD/Feinunze",
+      "currency": "USD",
+      "points": [
+        {
+          "year": 1960,
+          "value": 35.27
+        },
+        {
+          "year": 1961,
+          "value": 35.25
+        },
+        {
+          "year": 1962,
+          "value": 35.23
+        },
+        {
+          "year": 1963,
+          "value": 35.09
+        },
+        {
+          "year": 1964,
+          "value": 35.1
+        },
+        {
+          "year": 1965,
+          "value": 35.12
+        },
+        {
+          "year": 1966,
+          "value": 35.13
+        },
+        {
+          "year": 1967,
+          "value": 34.95
+        },
+        {
+          "year": 1968,
+          "value": 38.925
+        },
+        {
+          "year": 1969,
+          "value": 41.08333333333
+        },
+        {
+          "year": 1970,
+          "value": 35.94166666667
+        },
+        {
+          "year": 1971,
+          "value": 40.80416666667
+        },
+        {
+          "year": 1972,
+          "value": 58.15916666667
+        },
+        {
+          "year": 1973,
+          "value": 97.32583333333
+        },
+        {
+          "year": 1974,
+          "value": 159.245
+        },
+        {
+          "year": 1975,
+          "value": 161.02916666667
+        },
+        {
+          "year": 1976,
+          "value": 124.81583333333
+        },
+        {
+          "year": 1977,
+          "value": 147.72083333333
+        },
+        {
+          "year": 1978,
+          "value": 193.23916666667
+        },
+        {
+          "year": 1979,
+          "value": 306.6675
+        },
+        {
+          "year": 1980,
+          "value": 607.86416666667
+        },
+        {
+          "year": 1981,
+          "value": 459.75416666667
+        },
+        {
+          "year": 1982,
+          "value": 375.79666666667
+        },
+        {
+          "year": 1983,
+          "value": 422.53
+        },
+        {
+          "year": 1984,
+          "value": 360.4775
+        },
+        {
+          "year": 1985,
+          "value": 317.9075
+        },
+        {
+          "year": 1986,
+          "value": 367.69416666667
+        },
+        {
+          "year": 1987,
+          "value": 446.4725
+        },
+        {
+          "year": 1988,
+          "value": 437.04833333333
+        },
+        {
+          "year": 1989,
+          "value": 381.43166666667
+        },
+        {
+          "year": 1990,
+          "value": 383.46666666667
+        },
+        {
+          "year": 1991,
+          "value": 362.1825
+        },
+        {
+          "year": 1992,
+          "value": 343.73333333333
+        },
+        {
+          "year": 1993,
+          "value": 359.77
+        },
+        {
+          "year": 1994,
+          "value": 384.01166666667
+        },
+        {
+          "year": 1995,
+          "value": 384.16416666667
+        },
+        {
+          "year": 1996,
+          "value": 387.69583333333
+        },
+        {
+          "year": 1997,
+          "value": 331.09583333333
+        },
+        {
+          "year": 1998,
+          "value": 294.16083333333
+        },
+        {
+          "year": 1999,
+          "value": 278.76833333333
+        },
+        {
+          "year": 2000,
+          "value": 279.03166666667
+        },
+        {
+          "year": 2001,
+          "value": 270.98916666667
+        },
+        {
+          "year": 2002,
+          "value": 309.97166666667
+        },
+        {
+          "year": 2003,
+          "value": 363.50916666667
+        },
+        {
+          "year": 2004,
+          "value": 409.21158333333
+        },
+        {
+          "year": 2005,
+          "value": 444.84258333333
+        },
+        {
+          "year": 2006,
+          "value": 604.33583333333
+        },
+        {
+          "year": 2007,
+          "value": 696.72025
+        },
+        {
+          "year": 2008,
+          "value": 871.70725
+        },
+        {
+          "year": 2009,
+          "value": 972.96591666667
+        },
+        {
+          "year": 2010,
+          "value": 1224.66425
+        },
+        {
+          "year": 2011,
+          "value": 1569.21083333333
+        },
+        {
+          "year": 2012,
+          "value": 1669.51766666667
+        },
+        {
+          "year": 2013,
+          "value": 1411.46230174415
+        },
+        {
+          "year": 2014,
+          "value": 1265.5775
+        },
+        {
+          "year": 2015,
+          "value": 1160.66333333333
+        },
+        {
+          "year": 2016,
+          "value": 1248.98833333333
+        },
+        {
+          "year": 2017,
+          "value": 1257.55916666667
+        },
+        {
+          "year": 2018,
+          "value": 1269.22666666667
+        },
+        {
+          "year": 2019,
+          "value": 1392.49833333333
+        },
+        {
+          "year": 2020,
+          "value": 1770.25416666667
+        },
+        {
+          "year": 2021,
+          "value": 1799.62916666667
+        },
+        {
+          "year": 2022,
+          "value": 1800.6025
+        },
+        {
+          "year": 2023,
+          "value": 1942.66583333333
+        },
+        {
+          "year": 2024,
+          "value": 2387.7025
+        }
+      ]
+    },
+    {
+      "id": "silver",
+      "name": "Silber",
+      "group": "Edelmetalle",
+      "unit": "USD/Feinunze",
+      "currency": "USD",
+      "points": [
+        {
+          "year": 1960,
+          "value": 0.9137
+        },
+        {
+          "year": 1961,
+          "value": 0.92444166667
+        },
+        {
+          "year": 1962,
+          "value": 1.083725
+        },
+        {
+          "year": 1963,
+          "value": 1.27910833333
+        },
+        {
+          "year": 1964,
+          "value": 1.293
+        },
+        {
+          "year": 1965,
+          "value": 1.293
+        },
+        {
+          "year": 1966,
+          "value": 1.293
+        },
+        {
+          "year": 1967,
+          "value": 1.54918333333
+        },
+        {
+          "year": 1968,
+          "value": 2.14463333333
+        },
+        {
+          "year": 1969,
+          "value": 1.79066666667
+        },
+        {
+          "year": 1970,
+          "value": 1.77083333333
+        },
+        {
+          "year": 1971,
+          "value": 1.54564166667
+        },
+        {
+          "year": 1972,
+          "value": 1.68456666667
+        },
+        {
+          "year": 1973,
+          "value": 2.55755833333
+        },
+        {
+          "year": 1974,
+          "value": 4.70798
+        },
+        {
+          "year": 1975,
+          "value": 4.418515
+        },
+        {
+          "year": 1976,
+          "value": 4.355625
+        },
+        {
+          "year": 1977,
+          "value": 4.63608333333
+        },
+        {
+          "year": 1978,
+          "value": 5.41876666667
+        },
+        {
+          "year": 1979,
+          "value": 11.099575
+        },
+        {
+          "year": 1980,
+          "value": 20.80436666667
+        },
+        {
+          "year": 1981,
+          "value": 10.52318333333
+        },
+        {
+          "year": 1982,
+          "value": 7.92989166667
+        },
+        {
+          "year": 1983,
+          "value": 11.42628333333
+        },
+        {
+          "year": 1984,
+          "value": 8.144025
+        },
+        {
+          "year": 1985,
+          "value": 6.11523333333
+        },
+        {
+          "year": 1986,
+          "value": 5.43919166667
+        },
+        {
+          "year": 1987,
+          "value": 7.01009166667
+        },
+        {
+          "year": 1988,
+          "value": 6.53045833333
+        },
+        {
+          "year": 1989,
+          "value": 5.50709166667
+        },
+        {
+          "year": 1990,
+          "value": 4.833225
+        },
+        {
+          "year": 1991,
+          "value": 4.05135833333
+        },
+        {
+          "year": 1992,
+          "value": 3.94600833333
+        },
+        {
+          "year": 1993,
+          "value": 4.3084
+        },
+        {
+          "year": 1994,
+          "value": 5.2847
+        },
+        {
+          "year": 1995,
+          "value": 5.20024166667
+        },
+        {
+          "year": 1996,
+          "value": 5.2013
+        },
+        {
+          "year": 1997,
+          "value": 4.90603333333
+        },
+        {
+          "year": 1998,
+          "value": 5.55079166667
+        },
+        {
+          "year": 1999,
+          "value": 5.21545833333
+        },
+        {
+          "year": 2000,
+          "value": 4.95324166667
+        },
+        {
+          "year": 2001,
+          "value": 4.376
+        },
+        {
+          "year": 2002,
+          "value": 4.60105
+        },
+        {
+          "year": 2003,
+          "value": 4.87624166667
+        },
+        {
+          "year": 2004,
+          "value": 6.65786666667
+        },
+        {
+          "year": 2005,
+          "value": 7.30836666667
+        },
+        {
+          "year": 2006,
+          "value": 11.55923333333
+        },
+        {
+          "year": 2007,
+          "value": 13.391975
+        },
+        {
+          "year": 2008,
+          "value": 14.99653333333
+        },
+        {
+          "year": 2009,
+          "value": 14.64353333333
+        },
+        {
+          "year": 2010,
+          "value": 20.15295833333
+        },
+        {
+          "year": 2011,
+          "value": 35.22411666667
+        },
+        {
+          "year": 2012,
+          "value": 31.13740833333
+        },
+        {
+          "year": 2013,
+          "value": 23.84968611739
+        },
+        {
+          "year": 2014,
+          "value": 19.0715
+        },
+        {
+          "year": 2015,
+          "value": 15.72066666667
+        },
+        {
+          "year": 2016,
+          "value": 17.14675
+        },
+        {
+          "year": 2017,
+          "value": 17.06616666667
+        },
+        {
+          "year": 2018,
+          "value": 15.71375
+        },
+        {
+          "year": 2019,
+          "value": 16.21758333333
+        },
+        {
+          "year": 2020,
+          "value": 20.53658333333
+        },
+        {
+          "year": 2021,
+          "value": 25.16458333333
+        },
+        {
+          "year": 2022,
+          "value": 21.79441666667
+        },
+        {
+          "year": 2023,
+          "value": 23.39858333333
+        },
+        {
+          "year": 2024,
+          "value": 28.26916666667
+        }
+      ]
+    }
+  ],
+  "macro": [
+    {
+      "country": "Deutschland",
+      "inflation": 2.2564981433876,
+      "military": 86.1482850785157,
+      "gdp": 4685.59257780469
+    },
+    {
+      "country": "Spanien",
+      "inflation": 2.77406987275873,
+      "military": 25.1998376447668,
+      "gdp": 1725.67165274219
+    },
+    {
+      "country": "USA",
+      "inflation": 2.94952520485207,
+      "military": 1004.901,
+      "gdp": 29298.013
+    },
+    {
+      "country": "Frankreich",
+      "inflation": 1.99742599742599,
+      "military": 63.5746992125,
+      "gdp": 3160.44262246508
+    },
+    {
+      "country": "Großbritannien",
+      "inflation": 3.2715729463592,
+      "military": 89.814565861936,
+      "gdp": 3695.53951353415
+    }
+  ],
+  "metadata": {
+    "fetchedAt": "2026-10-28T11:57:08.129194+00:00",
+    "frequency": "annual",
+    "sources": [
+      {
+        "name": "World Bank Commodity Price Data (Pink Sheet)",
+        "url": "https://thedocs.worldbank.org/en/doc/5d903e848db1d1b83e0ec8f744e55570-0350012021/related/CMO-Historical-Data-Annual.xlsx",
+        "sha256": "53558e24cc363f57f3536ca8dd6c8e5cf1ac937ecaec8f485d5266b0b52b080c",
+        "sourceUpdated": "Updated on January 03, 2025",
+        "aggregation": "Annual arithmetic mean, nominal USD per troy ounce"
+      },
+      {
+        "name": "World Development Indicators FP.CPI.TOTL",
+        "url": "https://api.worldbank.org/v2/country/USA/indicator/FP.CPI.TOTL?format=json&per_page=1000",
+        "sha256": "4f9559bdc84561897c68910e9561bd802a20fb9631ebc86a5177934f7f5f66e6",
+        "sourceUpdated": "2026-10-08"
+      },
+      {
+        "name": "World Development Indicators FP.CPI.TOTL.ZG",
+        "url": "https://api.worldbank.org/v2/country/DEU;ESP;USA;FRA;GBR/indicator/FP.CPI.TOTL.ZG?format=json&per_page=1000",
+        "sha256": "b36f657c7759f0b35f04277a3f49248013ad243394205cba386628068f50748b",
+        "sourceUpdated": "2026-10-08"
+      },
+      {
+        "name": "World Development Indicators MS.MIL.XPND.CD",
+        "url": "https://api.worldbank.org/v2/country/DEU;ESP;USA;FRA;GBR/indicator/MS.MIL.XPND.CD?format=json&per_page=1000",
+        "sha256": "0381e0adea2a1fcf223993466bb1ddfed74996cfa258c7e45f98f48c0b10a202",
+        "sourceUpdated": "2026-10-08"
+      },
+      {
+        "name": "World Development Indicators NY.GDP.MKTP.CD",
+        "url": "https://api.worldbank.org/v2/country/DEU;ESP;USA;FRA;GBR/indicator/NY.GDP.MKTP.CD?format=json&per_page=1000",
+        "sha256": "9747040b566a7da553e0bc15b6996aa11b06caedb57a7c909d3d484cc3e6e222",
+        "sourceUpdated": "2026-10-08"
+      }
+    ],
+    "licenseUrl": "https://data.worldbank.org/summary-terms-of-use",
+    "coverage": "Gold und Silber; keine Aktien- oder Immobilienkurse.",
+    "notes": "Keine Interpolation, keine Devisenumrechnung. Makrowerte beziehen sich ausschließlich auf das angegebene Berichtsjahr; fehlende Werte bleiben null."
+  }
+}

@@ -10,6 +10,38 @@ struct Source: Codable, Identifiable { var id: String { url }; let provider: Str
 struct Field: Codable, Identifiable { var id: String { title }; let title: String; let text: String }
 struct Content: Codable { let cycles: [Cycle]; let documents: [CrisisDocument]; let sources: [Source]; let fields: [Field] }
 struct CrisisError: LocalizedError { let message: String; var errorDescription: String? { message } }
+struct SpotQuote: Codable {
+ let name: String?
+ let symbol: String?
+ let price: Double?
+ let value: Double?
+ let unit: String?
+ let currency: String?
+ let asOf: String?
+ let timestamp: String?
+ let error: String?
+ var amount: Double? { let n = price ?? value; return n.map { $0.isFinite && $0 > 0 && $0 <= 1e15 } == true ? n : nil }
+}
+struct MarketProvenance: Codable {
+ let provider: String?
+ let fetchedAt: String?
+ let cached: Bool?
+ let stale: Bool?
+ let notes: [String]?
+ let quotes: [SpotQuote]?
+ static func parse(_ object: Any?) throws -> MarketProvenance? {
+  guard let object = object else { return nil }
+  let value = try JSONDecoder().decode(Self.self, from: JSONSerialization.data(withJSONObject: object))
+  let strings = [value.provider, value.fetchedAt].compactMap { $0 } + (value.notes ?? [])
+  guard strings.allSatisfy({ $0.count <= 1000 }), (value.notes?.count ?? 0) <= 30, (value.quotes?.count ?? 0) <= 30 else { throw CrisisError(message: "Ungültige Quellenmetadaten.") }
+  for q in value.quotes ?? [] {
+   guard [q.name,q.symbol,q.unit,q.currency,q.asOf,q.timestamp,q.error].compactMap({ $0 }).allSatisfy({ $0.count <= 500 }) else { throw CrisisError(message: "Ungültige Kursmetadaten.") }
+   for n in [q.price,q.value].compactMap({ $0 }) { guard n.isFinite && n > 0 && n <= 1e15 else { throw CrisisError(message: "Ungültiger Zeitpunktkurs.") } }
+  }
+  return value
+ }
+}
+struct StoredMarket: Codable { let data: MarketData; let provenance: MarketProvenance? }
 
 enum CrisisEngine {
  static func years(_ c: Cycle, from: Int = 1926, to: Int = 2126) -> [Int] {
@@ -53,14 +85,18 @@ enum CrisisEngine {
   let cpi = Dictionary(uniqueKeysWithValues: d.cpi.map { ($0.year, $0.value) })
   let years = first.points.map(\.year).filter { y in y >= from && y <= to && ss.allSatisfy { $0.points.contains { $0.year == y } } && (!real || cpi[y] != nil) }
   guard years.count >= 2, let base = years.first else { throw CrisisError(message: "Mindestens zwei gemeinsame Jahreswerte (ggf. mit CPI) erforderlich.") }
-  return ss.map { s in
+  return try ss.map { s in
    let map = Dictionary(uniqueKeysWithValues: s.points.map { ($0.year, $0.value) }); var next = s
-   next.points = years.map { y in Point(year: y, value: map[y]! / map[base]! * 100 * (real ? cpi[base]! / cpi[y]! : 1)) }; return next
+   next.points = try years.map { y in
+    let index = map[y]! / map[base]! * 100 * (real ? cpi[base]! / cpi[y]! : 1)
+    guard index.isFinite && index > 0 && index <= 1e15 else { throw CrisisError(message: "Die Werte sind für einen endlichen Vergleich zu weit auseinander.") }
+    return Point(year: y, value: index)
+   }; return next
   }
  }
  static func ratio(_ d: MarketData) -> Point? {
   guard let a = d.series.first(where: { $0.id == "gold" }), let b = d.series.first(where: { $0.id == "silver" }), a.currency == b.currency, a.unit == b.unit else { return nil }
-  for p in a.points.reversed() { if let q = b.points.first(where: { $0.year == p.year }) { return Point(year: p.year, value: p.value / q.value) } }; return nil
+  for p in a.points.reversed() { if let q = b.points.first(where: { $0.year == p.year }) { let value = p.value / q.value; return value.isFinite && value > 0 ? Point(year: p.year, value: value) : nil } }; return nil
  }
  static func csvLabel(_ name: String) -> String {
   let safe = name.range(of: #"^[\s]*[=+\-@]|^[\t\r\n]"#, options: .regularExpression) != nil ? "'" + name : name

@@ -44,4 +44,56 @@ final class EngineTests: XCTestCase {
   let bad = String(data: bytes, encoding: .utf8)!.replacingOccurrences(of: "2026-01-01", with: "2026-02-30")
   XCTAssertThrowsError(try CrisisEngine.parse(Data(bad.utf8)))
  }
+ func testExtremeRatiosCannotProduceInfiniteChartValues() throws {
+  let raw = try fixture("golden-data")
+  var object = try XCTUnwrap(JSONSerialization.jsonObject(with: raw) as? [String: Any])
+  var series = try XCTUnwrap(object["series"] as? [[String: Any]])
+  var points = try XCTUnwrap(series[0]["points"] as? [[String: Any]])
+  points[0]["value"] = 1e-300
+  series[0]["points"] = points; object["series"] = series
+  let data = try CrisisEngine.parse(JSONSerialization.data(withJSONObject: object))
+  XCTAssertThrowsError(try CrisisEngine.compare(data, ids: ["gold"], from: 2020, to: 2022, real: false))
+ }
+ @MainActor func testStorePreservesDataAfterRejectedImport() throws {
+  let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+  defer { try? FileManager.default.removeItem(at: directory) }
+  let suite = "berlin.aia.crisis.test.\(UUID().uuidString)"
+  let preferences = try XCTUnwrap(UserDefaults(suiteName: suite))
+  defer { preferences.removePersistentDomain(forName: suite) }
+  let store = try CrisisStore(preferences: preferences, directory: directory)
+  let valid = directory.appendingPathComponent("valid.json")
+  try fixture("golden-data").write(to: valid)
+  store.load(valid)
+  XCTAssertEqual(store.data.source, "Test fixture")
+  let invalid = directory.appendingPathComponent("invalid.json")
+  try Data("{}".utf8).write(to: invalid)
+  store.load(invalid)
+  XCTAssertEqual(store.data.source, "Test fixture")
+  XCTAssertTrue(store.message.contains("Import abgelehnt"))
+  let restored = try CrisisStore(preferences: preferences, directory: directory)
+  XCTAssertEqual(restored.data.source, "Test fixture")
+ }
+ @MainActor func testBrandingAndCorruptStorageRecovery() throws {
+  let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+  defer { try? FileManager.default.removeItem(at: directory) }
+  let suite = "berlin.aia.crisis.test.\(UUID().uuidString)"
+  let preferences = try XCTUnwrap(UserDefaults(suiteName: suite))
+  defer { preferences.removePersistentDomain(forName: suite) }
+  let store = try CrisisStore(preferences: preferences, directory: directory)
+  store.partner = "Persistente Beratung"; store.theme = "teal"
+  let broken = directory.appendingPathComponent("market.json")
+  try Data("broken-json".utf8).write(to: broken)
+  let restored = try CrisisStore(preferences: preferences, directory: directory)
+  XCTAssertEqual(restored.partner, "Persistente Beratung")
+  XCTAssertEqual(restored.theme, "teal")
+  XCTAssertEqual(restored.data.kind, "import")
+  XCTAssertTrue(restored.message.contains("bleibt erhalten"))
+  XCTAssertEqual(try String(contentsOf: broken, encoding: .utf8), "broken-json")
+ }
+ @MainActor func testBoundedFileReadRejectsOversizedInput() throws {
+  let file = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+  defer { try? FileManager.default.removeItem(at: file) }
+  try Data(repeating: 32, count: 2 * 1024 * 1024 + 1).write(to: file)
+  XCTAssertThrowsError(try CrisisStore.readBounded(file))
+ }
 }
