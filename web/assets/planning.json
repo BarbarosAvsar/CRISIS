@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "title": "Strukturcheck",
+  "purpose": "Eigene Abhängigkeiten klären, Zugänge prüfen und einen nächsten Schritt dokumentieren. Ihre Antworten sind eine persönliche Bestandsaufnahme, keine gemessene Risikobewertung.",
+  "questions": [
+    {
+      "id": "liquidity",
+      "title": "Liquidität",
+      "text": "Ist eine kurzfristig verfügbare Reserve für absehbare Verpflichtungen dokumentiert?",
+      "why": "Halten Sie fest, welche Mittel tatsächlich verfügbar sind und welche Verpflichtungen Sie berücksichtigen. Es wird keine Reservehöhe empfohlen.",
+      "source": "Wirkungsjahr 2026, S. 2 und 14: Liquidität, Beweglichkeit und Kapital als Mandat."
+    },
+    {
+      "id": "access",
+      "title": "Tatsächlicher Zugriff",
+      "text": "Sind Verfügungsrechte und praktische Zugriffswege auf Ihre Vermögenswerte geprüft?",
+      "why": "Rechtliches Eigentum und tatsächliche Verfügbarkeit können auseinanderfallen. Notieren Sie Prüfungen oder offene Zugangsfragen, keine Kontonummern oder Zugangsdaten.",
+      "source": "Goldverbote und Geldordnung, S. 7 und 10–11: ökonomischer Wert und operative Verfügbarkeit."
+    },
+    {
+      "id": "dependencies",
+      "title": "Abhängigkeiten",
+      "text": "Sind Konzentrationen bei Banken, Verwahrern, Rechtsräumen und technischen Zugängen bekannt?",
+      "why": "Dokumentieren Sie Abhängigkeiten, die bei einer Störung mehrere Positionen gleichzeitig betreffen könnten. Eine breite Assetauswahl allein beantwortet diese Frage nicht.",
+      "source": "Wirkungsjahr 2026, S. 14 und 16: Abhängigkeiten, systemische Korrelation und Strukturqualität."
+    },
+    {
+      "id": "alternatives",
+      "title": "Alternativen und Vertretung",
+      "text": "Sind Ausweichzugänge und Vertretungen vorgesehen und praktisch erprobt?",
+      "why": "Notieren Sie, was im Ausfall eines Zugangs weiterhin funktioniert und welche Annahmen noch ungeprüft sind.",
+      "source": "Wirkungsjahr 2026, S. 14 und 16: Redundanz, Entkopplungsfähigkeit und Zugangsautonomie."
+    },
+    {
+      "id": "decisions",
+      "title": "Entscheidung und Wiederprüfung",
+      "text": "Sind Zuständigkeit, nächster Prüfschritt und ein Termin zur Wiederprüfung festgehalten?",
+      "why": "Ein konkreter, möglichst umkehrbarer nächster Schritt ist hilfreicher als ein pauschales Sicherheitsurteil. Verwenden Sie die Felder unterhalb der Fragen.",
+      "source": "Wirkungsjahr 2026, S. 14–16: klare Entscheidungswege, Reversibilität und adaptive Entscheidungslogik."
+    }
+  ]
+}

@@ -104,4 +104,76 @@ final class EngineTests: XCTestCase {
   try Data(repeating: 32, count: 2 * 1024 * 1024 + 1).write(to: file)
   XCTAssertThrowsError(try CrisisStore.readBounded(file))
  }
+ func testPurchasingPowerMatchesSharedReference() throws {
+  let data = try CrisisEngine.parse(fixture("golden-data"))
+  let raw = try XCTUnwrap(JSONSerialization.jsonObject(with: fixture("planning-vectors")) as? [String: Any])
+  let expected = try XCTUnwrap(raw["historical"] as? [String: Double])
+  let result = try CrisisEngine.purchasingPower(data, amount: expected["amount"]!, from: Int(expected["from"]!), to: Int(expected["to"]!))
+  XCTAssertEqual(result.factor, expected["factor"]!, accuracy: 1e-10)
+  XCTAssertEqual(result.requiredAmount, expected["requiredAmount"]!, accuracy: 1e-10)
+  XCTAssertEqual(result.remainingPower, expected["remainingPower"]!, accuracy: 1e-10)
+  XCTAssertEqual(result.lossPercent, expected["lossPercent"]!, accuracy: 1e-10)
+ }
+ func testInflationScenarioAndDeflationReferences() throws {
+  let raw = try XCTUnwrap(JSONSerialization.jsonObject(with: fixture("planning-vectors")) as? [String: Any])
+  for key in ["scenario", "deflation"] {
+   let expected = try XCTUnwrap(raw[key] as? [String: Double])
+   let result = try CrisisEngine.inflationScenario(amount: expected["amount"]!, ratePercent: expected["ratePercent"]!, years: Int(expected["years"]!))
+   XCTAssertEqual(result.factor, expected["factor"]!, accuracy: 1e-10)
+   XCTAssertEqual(result.requiredAmount, expected["requiredAmount"]!, accuracy: 1e-10)
+   XCTAssertEqual(result.remainingPower, expected["remainingPower"]!, accuracy: 1e-10)
+  }
+ }
+ func testPurchasingPowerRejectsMissingYearsAndExtremeInputs() throws {
+  let data = try CrisisEngine.parse(fixture("golden-data"))
+  XCTAssertThrowsError(try CrisisEngine.purchasingPower(data, amount: 10000, from: 2020, to: 2023))
+  XCTAssertThrowsError(try CrisisEngine.purchasingPower(data, amount: 10000, from: 2022, to: 2020))
+  for amount in [0, -1, .infinity, .nan, 1e13] { XCTAssertThrowsError(try CrisisEngine.inflationScenario(amount: amount, ratePercent: 3, years: 10)) }
+  XCTAssertThrowsError(try CrisisEngine.inflationScenario(amount: 10000, ratePercent: 101, years: 10))
+  XCTAssertThrowsError(try CrisisEngine.inflationScenario(amount: 10000, ratePercent: 3, years: 0))
+  XCTAssertThrowsError(try CrisisEngine.inflationScenario(amount: 1e12, ratePercent: 100, years: 100))
+ }
+ func testPlanValidationCountsAndReport() throws {
+  let document = try JSONDecoder().decode(PlanningDocument.self, from: fixture("planning"))
+  var plan = PlanningEngine.empty(document)
+  XCTAssertEqual(PlanningEngine.counts(plan).open, 5)
+  plan.answers["liquidity"] = PlanningAnswer(status: "documented", note: "Reserve dokumentiert")
+  plan.answers["access"] = PlanningAnswer(status: "needs_action", note: "Vertretung prüfen")
+  plan.action = "Vertretung gemeinsam testen"; plan.owner = "Eigene Zuständigkeit"; plan.reviewDate = "2026-11-30"
+  try PlanningEngine.validate(plan, document: document)
+  let counts = PlanningEngine.counts(plan)
+  XCTAssertEqual(counts.reviewed, 2); XCTAssertEqual(counts.open, 4); XCTAssertEqual(counts.needsAction, 1)
+  let report = try PlanningEngine.report(plan, document: document, partner: "Beratung", date: "2026-10-28")
+  XCTAssertTrue(report.contains(plan.action)); XCTAssertTrue(report.contains(document.questions[0].source))
+  plan.reviewDate = "2026-02-30"
+  XCTAssertThrowsError(try PlanningEngine.validate(plan, document: document))
+  plan.reviewDate = ""; plan.answers["liquidity"]?.note = String(repeating: "a", count: 501)
+  XCTAssertThrowsError(try PlanningEngine.validate(plan, document: document))
+  plan.answers.removeValue(forKey: "liquidity")
+  XCTAssertThrowsError(try PlanningEngine.validate(plan, document: document))
+ }
+ @MainActor func testPlanSavedLocallyRestoredDeletedAndCorruptFilePreserved() throws {
+  let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+  defer { try? FileManager.default.removeItem(at: directory) }
+  let suite = "berlin.aia.crisis.test.\(UUID().uuidString)"
+  let preferences = try XCTUnwrap(UserDefaults(suiteName: suite))
+  defer { preferences.removePersistentDomain(forName: suite) }
+  let store = try CrisisStore(preferences: preferences, directory: directory)
+  store.plan.answers["liquidity"]?.note = "Eigene persönliche Notiz"
+  store.plan.action = "Nächsten Schritt prüfen"
+  store.savePlan()
+  let restored = try CrisisStore(preferences: preferences, directory: directory)
+  XCTAssertEqual(restored.plan.action, "Nächsten Schritt prüfen")
+  XCTAssertEqual(restored.plan.answers["liquidity"]?.note, "Eigene persönliche Notiz")
+  let planFile = directory.appendingPathComponent("planning.json")
+  XCTAssertTrue(FileManager.default.fileExists(atPath: planFile.path))
+  restored.deletePlan()
+  XCTAssertFalse(FileManager.default.fileExists(atPath: planFile.path))
+  XCTAssertEqual(restored.plan.action, "")
+  try Data("invalid-plan".utf8).write(to: planFile)
+  let recovery = try CrisisStore(preferences: preferences, directory: directory)
+  XCTAssertEqual(recovery.plan.action, "")
+  XCTAssertTrue(recovery.message.contains("Originaldatei bleibt erhalten"))
+  XCTAssertEqual(try String(contentsOf: planFile, encoding: .utf8), "invalid-plan")
+ }
 }

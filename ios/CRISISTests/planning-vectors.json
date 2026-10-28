@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "historical": {"amount": 10000, "from": 2020, "to": 2022, "cpiFrom": 100, "cpiTo": 121, "factor": 1.21, "requiredAmount": 12100, "remainingPower": 8264.462809917355, "lossPercent": 17.355371900826448},
+  "scenario": {"amount": 10000, "ratePercent": 3, "years": 10, "factor": 1.3439163793441222, "requiredAmount": 13439.163793441222, "remainingPower": 7440.939148967251, "lossPercent": 25.590608510327485},
+  "deflation": {"amount": 10000, "ratePercent": -2, "years": 5, "factor": 0.9039207967999999, "requiredAmount": 9039.207968, "remainingPower": 11062.91617075449}
+}

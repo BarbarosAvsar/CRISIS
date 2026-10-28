@@ -60,6 +60,30 @@ class CrisisModel(app: Application): AndroidViewModel(app) {
  var pendingExport = ""
  var endpoint by mutableStateOf(prefs.getString("endpoint","") ?: "")
  var liveProvenance by mutableStateOf(restored?.provenance); private set
+ val planningGuide=PlanningEngine.guide(app.assets.open("planning.json").bufferedReader().use {it.readText()})
+ private val planFile=AtomicFile(java.io.File(app.filesDir,"structure-plan.json"))
+ private val restoredPlan=runCatching {planFile.openRead().use {stream->val bytes=stream.readBytesLimited(32*1024);PlanningEngine.parse(bytes.toString(Charsets.UTF_8))}}
+ var plan by mutableStateOf(restoredPlan.getOrNull() ?: PlanningEngine.emptyPlan()); private set
+ var planWarning by mutableStateOf(if(restoredPlan.isFailure && java.io.File(app.filesDir,"structure-plan.json").exists())"Der gespeicherte Strukturcheck ist beschädigt. Er bleibt bis zum ausdrücklichen Speichern oder Löschen erhalten." else ""); private set
+ var planBusy by mutableStateOf(false); private set
+ private fun java.io.InputStream.readBytesLimited(limit: Int): ByteArray {
+  val out=java.io.ByteArrayOutputStream();val buffer=ByteArray(4096);var n=read(buffer)
+  while(n!=-1){require(out.size()+n<=limit){"Datei zu groß."};out.write(buffer,0,n);n=read(buffer)}
+  return out.toByteArray()
+ }
+ fun answer(id: String,status: String?=null,note: String?=null){val before=plan.answers.getValue(id);plan=plan.copy(answers=plan.answers+(id to before.copy(status=status ?: before.status,note=note?.take(500) ?: before.note)))}
+ fun planDetails(action: String=plan.action,owner: String=plan.owner,reviewDate: String=plan.reviewDate){plan=plan.copy(action=action.take(1000),owner=owner.take(80),reviewDate=reviewDate.take(10))}
+ fun savePlan(){
+  if(planBusy)return
+  val text=runCatching {PlanningEngine.json(plan)}.getOrElse {message=it.message ?: "Strukturcheck ungültig.";return}
+  planBusy=true
+  viewModelScope.launch {try {withContext(Dispatchers.IO){val output=planFile.startWrite();try {output.write(text.toByteArray(Charsets.UTF_8));planFile.finishWrite(output)}catch(error:Exception){planFile.failWrite(output);throw error}};planWarning="";message="Strukturcheck lokal gespeichert."}catch(error:Exception){message="Speichern fehlgeschlagen: ${error.message}"}finally{planBusy=false}}
+ }
+ fun deletePlan(){
+  if(planBusy)return
+  planBusy=true
+  viewModelScope.launch {try {withContext(Dispatchers.IO){planFile.delete();require(!java.io.File(getApplication<Application>().filesDir,"structure-plan.json").exists())};plan=PlanningEngine.emptyPlan();planWarning="";message="Strukturcheck gelöscht."}catch(error:Exception){message="Löschen fehlgeschlagen: ${error.message}"}finally{planBusy=false}}
+ }
  fun brand() { prefs.edit { putString("partner",partner.take(60));putString("theme",theme) };message="Branding gespeichert." }
  private fun readBounded(stream: java.io.InputStream): String = stream.use {
   val output=java.io.ByteArrayOutputStream();val buffer=ByteArray(8192);var count=it.read(buffer)
@@ -119,21 +143,37 @@ class CrisisModel(app: Application): AndroidViewModel(app) {
 class MainActivity: ComponentActivity(){ override fun onCreate(savedInstanceState: Bundle?){super.onCreate(savedInstanceState);setContent { CrisisApp() }} }
 @Composable fun CrisisApp(m: CrisisModel=viewModel()) {
  var tab by rememberSaveable { mutableIntStateOf(0) };val context=LocalContext.current
+ var morePage by rememberSaveable {mutableStateOf("menu")}
  val pages=rememberSaveableStateHolder()
  val export=rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/csv")) { uri -> if(uri!=null)m.exportFile(uri,m.pendingExport) }
  val template=rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri -> if(uri!=null)m.exportFile(uri,m.demoText) }
  val importer=rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri -> if(uri!=null)m.importFile(uri) }
+ val report=rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/plain")) {uri->if(uri!=null)m.exportFile(uri,m.pendingExport)}
  val accent=when(m.theme){"teal"->Color(0xFF286C60);"rose"->Color(0xFF873E59);else->Navy}
  MaterialTheme(colorScheme=lightColorScheme(primary=accent,secondary=Navy,background=Color(0xFFF7F8FA),surface=Color.White,onPrimary=Color.White,onSurface=Navy,onBackground=Navy)) {
-  Scaffold(bottomBar={ NavigationBar { listOf("Übersicht","Vergleich","Zyklen","Wissen","Mehr").forEachIndexed { i,t -> NavigationBarItem(selected=tab==i,onClick={tab=i},icon={Text(listOf("⌂","↗","◷","≡","···")[i],Modifier.clearAndSetSemantics {})},label={Text(t,fontSize=10.sp)}) } } }) { padding ->
-   pages.SaveableStateProvider(tab) {
+  Scaffold(bottomBar={ NavigationBar { listOf("Übersicht","Vergleich","Zyklen","Wissen","Mehr").forEachIndexed { i,t -> NavigationBarItem(selected=tab==i,onClick={tab=i;if(i==4)morePage="menu"},icon={Text(listOf("⌂","↗","◷","≡","···")[i],Modifier.clearAndSetSemantics {})},label={Text(t,fontSize=10.sp)}) } } }) { padding ->
+   pages.SaveableStateProvider(if(tab==4)"more-$morePage" else "tab-$tab") {
    Column(Modifier.padding(padding).fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
     val logo=remember { context.assets.open("logo.png").use {android.graphics.BitmapFactory.decodeStream(it).asImageBitmap()} }
     Image(logo,"CRISIS – Wissen, das Werte schützt.",Modifier.width(155.dp).height(52.dp))
     if(m.partner.isNotBlank())Text("In Kooperation mit ${m.partner}",style=MaterialTheme.typography.labelSmall)
     if(m.message.isNotEmpty()){Note(m.message);TextButton(onClick={m.message=""}){Text("Schließen")}}
     if(m.busy)LinearProgressIndicator(Modifier.fillMaxWidth().semantics {contentDescription="Daten werden verarbeitet"})
-    when(tab){0->Home(m){tab=it};1->Comparison(m.data){m.pendingExport=it;export.launch("crisis-vergleich.csv")};2->Cycles(m.content);3->Library(m.content);4->Settings(m,{importer.launch(arrayOf("application/json","text/plain"))},{template.launch("crisis-beispieldaten.json")})}
+    when(tab){
+     0->Home(m,{tab=it},{tab=4;morePage="power"},{tab=4;morePage="structure"})
+     1->Comparison(m.data){m.pendingExport=it;export.launch("crisis-vergleich.csv")}
+     2->Cycles(m.content)
+     3->Library(m.content)
+     4->{
+      if(morePage!="menu")TextButton(onClick={morePage="menu"}){Text("Zurück zu Mehr")}
+      when(morePage){
+       "power"->PurchasingPowerScreen(m.data)
+       "structure"->StructureCheckScreen(m){runCatching {PlanningEngine.report(m.planningGuide,m.plan,m.partner)}.onSuccess {m.pendingExport=it;report.launch("crisis-strukturcheck.txt")}.onFailure {m.message=it.message ?: "Strukturcheck ungültig."}}
+       "settings"->Settings(m,{importer.launch(arrayOf("application/json","text/plain"))},{template.launch("crisis-beispieldaten.json")})
+       else->MoreMenu {morePage=it}
+      }
+     }
+    }
     Text("©2026 CRISIS © · ALL I AM Akademie",style=MaterialTheme.typography.labelSmall)
     Text("Orientierung, keine Anlageberatung. Modelljahre sind keine belastbaren Prognosen.",style=MaterialTheme.typography.bodySmall)
    }
@@ -157,11 +197,16 @@ class MainActivity: ComponentActivity(){ override fun onCreate(savedInstanceStat
   Text(p.optString("notes","Einzelkurse sind nicht Teil der Jahresreihen."),style=MaterialTheme.typography.bodySmall)
  }
 }
-@Composable fun Home(m:CrisisModel,nav:(Int)->Unit){
- Heading("Makro-Intelligenz für Vermögensschutz","Erkennen, was 90% übersehen.")
- Text("Märkte verstehen. Muster hinterfragen. Werte schützen.")
- Button(onClick={nav(1)}){Text("Assets vergleichen ↗")};DataNotice(m.data);LiveNotice(m.liveProvenance)
- Panel("1926 — 2126"){Text("100 Jahre Rückblick und 100 Jahre reine Modellfortschreibung. Keine Kursprognose.");TextButton(onClick={nav(2)}){Text("Zyklen entdecken")}}
+@Composable fun Home(m:CrisisModel,nav:(Int)->Unit,onPower:()->Unit,onStructure:()->Unit){
+ Heading("Makro-Intelligenz für Vermögensschutz","Vermögen verstehen. Handlungsfähig bleiben.")
+ Text("Kaufkraft nachvollziehen, Märkte vergleichen und strukturelle Fragen vorbereiten.")
+ Button(onClick=onPower){Text("Kaufkraft berechnen")}
+ OutlinedButton(onClick={nav(1)}){Text("Assets vergleichen")}
+ OutlinedButton(onClick=onStructure){Text("Strukturcheck starten")}
+ DataNotice(m.data);LiveNotice(m.liveProvenance)
+ Panel("Datengrundlage"){Text("${m.data.series.joinToString {it.name}} · ${m.data.series.flatMap {it.points}.minOf {it.year}}–${m.data.series.flatMap {it.points}.maxOf {it.year}}. Für andere Anlageklassen stehen Quellenverweise und der Datenimport bereit.");TextButton(onClick={nav(2)}){Text("Zyklusmodell ansehen")}}
+ val missing=listOf("Aktien","Immobilien").filter {group->m.data.series.none {it.group.equals(group,true)}}
+ if(missing.isNotEmpty())Text("Nicht im geladenen Bestand: ${missing.joinToString()}. Keine erfundenen Vergleichswerte.",style=MaterialTheme.typography.bodySmall)
  Panel("Gold-Silber-Ratio"){val r=CrisisEngine.ratio(m.data);Text(r?.let { "${number(it.value)} : 1 · ${it.year}" } ?: "Nicht verfügbar",style=MaterialTheme.typography.headlineMedium);Text(if(m.data.kind=="demo")"Rechenbeispiel, kein Marktwert." else "Nur gleiche Währung und Einheit.")}
  Text("Die Welt als Wirkungsfeld.",style=MaterialTheme.typography.headlineSmall)
  m.content.fields.forEach { Panel(it.title){Text(it.text)} }
@@ -233,7 +278,7 @@ class MainActivity: ComponentActivity(){ override fun onCreate(savedInstanceStat
   TextButton(onClick={legal=!legal}){Text("Impressum & Datenschutz")}
   if(legal){
    Text("ALL I AM Akademie, ein Bereich des Herzenskraft e.V.\nKreuzkirchstrasse 17, 77652 Offenburg\nAlexander Avsar, Präsident\ninfo@aia.berlin · www.aia.berlin/crisis\nAngaben aus dem Brandguide. Register- und weitere Pflichtangaben sind vor Veröffentlichung zu bestätigen.")
-   Text("Keine Cookies, kein Tracking, kein Konto. Importierte Daten und Branding werden nur lokal gespeichert, nicht an CRISIS übertragen. Exporte und externe Links werden bewusst geöffnet. Importierte Daten lassen sich über die Wiederherstellung löschen; sämtliche lokalen Daten über die Android-App-Einstellungen. Externe Anbieter haben eigene Datenschutzbestimmungen. Diese Hinweise sind vor Veröffentlichung an den tatsächlichen Betrieb anzupassen.")
+   Text("Keine Cookies, kein Tracking, kein Konto. Importierte Daten und Branding bleiben lokal. Der persönliche Strukturcheck speichert Ihre Antworten, Notizen, Zuständigkeit und Wiederprüfung nur nach ausdrücklichem Speichern auf diesem Gerät. Diese Angaben werden nicht an den Kursadapter oder CRISIS übertragen. Mit ‚Strukturcheck löschen‘ entfernen Sie die gespeicherte Checkliste; importierte Marktdaten lassen sich über die Wiederherstellung löschen. Exporte erstellen bewusst gewählte Dateien, deren weitere Verwendung Sie selbst bestimmen. Sämtliche lokalen Daten können Sie über die Android-App-Einstellungen löschen. Beim bewusst gestarteten HTTPS-Abruf erhält Ihr Datenserver technische Verbindungsdaten. Für externe Links gelten die Datenschutzbestimmungen der Anbieter. Diese Hinweise sind vor Veröffentlichung an den tatsächlichen Betrieb anzupassen.")
   }
  }
 }

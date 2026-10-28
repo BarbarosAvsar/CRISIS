@@ -1,4 +1,12 @@
 import { cycleYears, validateData, compare, ratio, csv } from "./core.js";
+import {
+  purchasingPower,
+  inflationScenario,
+  emptyPlan,
+  validatePlan,
+  planSummary,
+  planningReport,
+} from "./planning.js";
 const $ = (s) => document.querySelector(s),
   escape = (s) =>
     String(s).replace(
@@ -37,6 +45,16 @@ let content,
   real = false;
 let settingsMessage = "",
   dataRequestPending = false;
+let planning,
+  plan,
+  planError = "",
+  planMessage = "";
+let historyAmount = "10000",
+  historyFrom = null,
+  historyTo = null,
+  scenarioAmount = "10000",
+  scenarioRate = "3",
+  scenarioYears = "10";
 const storage = {
   get(k) {
     try {
@@ -86,15 +104,20 @@ function provenanceNote() {
   ].filter(Boolean);
   return `<p class="small muted">${escape(parts.join(" · "))}</p>`;
 }
-function quotesPanel(){
-  if(!Array.isArray(provenance?.quotes)||!provenance.quotes.length)return '';
-  return `<section class="card"><h2>Aktuelle Einzelkurse</h2><p class="small muted">Zeitpunktkurse werden separat angezeigt und nicht mit Jahresmittelwerten verrechnet.</p><div class="grid">${provenance.quotes.map(q=>{
-    const value=q.price??q.value, valid=typeof value==='number'&&Number.isFinite(value)&&value>0;
-    return `<article><h3>${escape(q.name??q.symbol??'Kurs')}</h3><p>${valid?fmt(value)+' '+escape(q.unit??q.currency??''):'Nicht verfügbar'}</p><p class="small muted">${escape(q.asOf??q.timestamp??'Kein Zeitstempel')} ${q.error?' · '+escape(q.error):''}</p></article>`;
-  }).join('')}</div></section>`;
+function quotesPanel() {
+  if (!Array.isArray(provenance?.quotes) || !provenance.quotes.length)
+    return "";
+  return `<section class="card"><h2>Aktuelle Einzelkurse</h2><p class="small muted">Zeitpunktkurse werden separat angezeigt und nicht mit Jahresmittelwerten verrechnet.</p><div class="grid">${provenance.quotes
+    .map((q) => {
+      const value = q.price ?? q.value,
+        valid =
+          typeof value === "number" && Number.isFinite(value) && value > 0;
+      return `<article><h3>${escape(q.name ?? q.symbol ?? "Kurs")}</h3><p>${valid ? fmt(value) + " " + escape(q.unit ?? q.currency ?? "") : "Nicht verfügbar"}</p><p class="small muted">${escape(q.asOf ?? q.timestamp ?? "Kein Zeitstempel")} ${q.error ? " · " + escape(q.error) : ""}</p></article>`;
+    })
+    .join("")}</div></section>`;
 }
-function marketPanel(){
-  return `<section class="card"><h2>Echte Marktdaten</h2><p>Den gebündelten historischen Datenbestand laden oder einen neuen Abruf starten. Jahresmittel und einzelne aktuelle Kurse bleiben getrennt. Fehler ersetzen Ihren bisherigen Datenbestand nicht.</p><div class="actions"><button id="load-history" data-market-load ${dataRequestPending?'disabled':''}>Historische Daten laden</button><button id="refresh-market" data-market-load class="secondary" ${dataRequestPending?'disabled':''}>Marktdaten aktualisieren</button><button id="export-data" class="secondary">Aktuellen Datensatz speichern</button></div>${provenanceNote()}</section>${quotesPanel()}`;
+function marketPanel() {
+  return `<section class="card"><h2>Echte Marktdaten</h2><p>Den gebündelten historischen Datenbestand laden oder einen neuen Abruf starten. Jahresmittel und einzelne aktuelle Kurse bleiben getrennt. Fehler ersetzen Ihren bisherigen Datenbestand nicht.</p><div class="actions"><button id="load-history" data-market-load ${dataRequestPending ? "disabled" : ""}>Historische Daten laden</button><button id="refresh-market" data-market-load class="secondary" ${dataRequestPending ? "disabled" : ""}>Marktdaten aktualisieren</button><button id="export-data" class="secondary">Aktuellen Datensatz speichern</button></div>${provenanceNote()}</section>${quotesPanel()}`;
 }
 async function loadMarketData(live) {
   if (dataRequestPending) return;
@@ -131,8 +154,11 @@ async function loadMarketData(live) {
       );
     const info = payload.provenance ?? {
       provider: next.source,
-      fetchedAt:next.metadata?.fetchedAt,
-      notes: ["Gebündelter historischer Datenbestand; kein Live-Kurs.",next.metadata?.coverage??''],
+      fetchedAt: next.metadata?.fetchedAt,
+      notes: [
+        "Gebündelter historischer Datenbestand; kein Live-Kurs.",
+        next.metadata?.coverage ?? "",
+      ],
     };
     installData(next, info);
     settingsMessage = live
@@ -181,10 +207,168 @@ function title(k, h, p) {
 }
 function home() {
   const r = ratio(data);
-  return `<section class="hero"><div><p class="eyebrow">Makro-Intelligenz für Vermögensschutz</p><span class="badge demo">${data.kind === "demo" ? "Beispielmodus" : "Eigener Datenbestand"}</span><h1>Erkennen, was<br>90% übersehen.</h1><p class="lead">Märkte verstehen. Muster hinterfragen. Werte schützen. Ihr Blick auf Vermögen über den nächsten Nachrichtenzyklus hinaus.</p><div class="actions"><a class="button" href="#compare">Assets vergleichen ↗</a><a class="button secondary" href="#cycles">Zyklen entdecken</a></div></div><div class="orbit" aria-label="Modelljahr 2026"><span>Perspektive statt Schlagzeilen</span><strong>2026</strong><span>Das Wirkungsjahr</span><small>Geschichte · Gegenwart · Szenarien</small></div></section>${note()}<div class="grid"><article class="card"><span class="eyebrow">01 / ZEITLICHE ORIENTIERUNG</span><div class="metric">1926 — 2126</div><p>100 Jahre Rückblick und 100 Jahre reine Modellfortschreibung. Keine Kursprognose.</p><a href="#cycles">Das Zyklusmodell ansehen →</a></article><article class="card"><span class="eyebrow">02 / EDELMETALLE</span><div class="metric">${r ? fmt(r.value) + " : 1" : "Keine Daten"}</div><p>Gold-Silber-Ratio${r ? " · " + r.year : ""}. ${data.kind === "demo" ? "Rechenbeispiel, kein Marktwert." : "Nur bei gleicher Währung und Einheit."}</p><a href="#compare">Relationen verstehen →</a></article><article class="card"><span class="eyebrow">03 / DATENKLARHEIT</span><div class="metric">${data.series.length} Perspektiven</div><p>Aktien, Immobilien und Edelmetalle. Vergleich auf gemeinsamer Basis 100.</p><a href="#settings">Eigene Daten importieren →</a></article></div><div class="section-heading"><h2>Die Welt als Wirkungsfeld.</h2><a href="#library">Analyse 2026 lesen ↗</a></div><div class="grid four">${content.fields.map((f, i) => `<article class="card"><span class="number">0${i + 1} / WIRKUNGSRAUM</span><h3>${escape(f.title)}</h3><p>${escape(f.text)}</p></article>`).join("")}</div><div class="section-heading"><h2>Makrolage</h2><span class="small muted">Keine lizenzierten Live-Daten angebunden</span></div><div class="card table-wrap">${macroTable()}</div>`;
+  const years = data.series.flatMap((s) => s.points.map((p) => p.year));
+  return `<section class="hero"><div>
+    <p class="eyebrow">Wissen, das Werte schützt.</p>
+    <span class="badge ${data.kind === "demo" ? "demo" : ""}">${data.kind === "demo" ? "Beispielmodus" : "Historische Berichtsdaten"}</span>
+    <h1>Vermögen verstehen.<br>Handlungsfähig bleiben.</h1>
+    <p class="lead">CRISIS macht Kaufkraftverlust sichtbar, vergleicht die Entwicklung von Vermögenswerten und hilft Ihnen, Abhängigkeiten Ihrer Vermögensstruktur zu prüfen.</p>
+    <div class="actions"><a class="button" href="#purchasingpower">Meine Kaufkraft berechnen</a><a class="button secondary" href="#compare">Marktverläufe vergleichen</a></div>
+  </div><aside class="purpose-card"><p class="eyebrow">So nutzen Sie CRISIS</p>
+    <ol><li><strong>Verstehen</strong><span>Was bleibt von einem Geldbetrag bei anhaltender Inflation?</span></li>
+    <li><strong>Einordnen</strong><span>Wie haben sich Preise nominal und nach Inflation entwickelt?</span></li>
+    <li><strong>Vorbereiten</strong><span>Welche Fragen zu Liquidität, Zugang und Abhängigkeiten sind noch offen?</span></li></ol>
+    <p class="small">Berechnungen und strukturierte Fragen unterstützen Ihre Vorbereitung. Sie erzeugen keine persönlichen Anlageempfehlungen.</p>
+  </aside></section>
+  <div class="grid"><article class="card"><span class="number">01 / KAUFKRAFT</span><h2>Was bleibt real?</h2><p>Berechnen Sie ein eigenes Inflationsszenario und sehen Sie den Unterschied zwischen Geldbetrag und Kaufkraft.</p><a href="#purchasingpower">Szenario berechnen →</a></article>
+  <article class="card"><span class="number">02 / MARKTVERGLEICH</span><h2>Was zeigt die Historie?</h2><p>Vergleichen Sie verfügbare Reihen auf gemeinsamer Basis 100. CPI, Quellen und Beobachtungsjahre bleiben sichtbar.</p><a href="#compare">Daten vergleichen →</a></article>
+  <article class="card"><span class="number">03 / STRUKTURCHECK</span><h2>Was ist noch ungeklärt?</h2><p>Halten Sie fest, welche Fragen zu Ihrer Vermögensstruktur beantwortet sind und wo Sie Klärungsbedarf sehen.</p><a href="#structure">Struktur prüfen →</a></article></div>
+  <section class="card"><div class="section-heading"><h2>Ihr aktueller Datenbestand</h2><a href="#settings">Daten und Quellen verwalten →</a></div><p>${data.series.length} Reihen: ${data.series.map((s) => escape(s.name)).join(", ")}. Beobachtungsjahre ${Math.min(...years)}–${Math.max(...years)}; gemeinsame Jahre können davon abweichen.</p>${note()}<p>Gold-Silber-Ratio${r ? " " + r.year + ": <strong>" + fmt(r.value) + " : 1</strong>" : " ist für diesen Datenbestand nicht verfügbar."} ${data.kind === "demo" ? "Synthetisches Rechenbeispiel." : "Jahreswerte gleicher Währung und Einheit; kein aktueller Handelskurs."}</p></section>
+  <div class="section-heading"><h2>Risiken im Zusammenhang verstehen.</h2><a href="#library">Dossier 2026 lesen ↗</a></div><div class="grid four">${content.fields.map((f, i) => `<article class="card"><span class="number">0${i + 1} / WIRKUNGSRAUM</span><h3>${escape(f.title)}</h3><p>${escape(f.text)}</p></article>`).join("")}</div>
+  <div class="section-heading"><h2>Makrolage</h2><span class="small muted">Berichtsdaten laut Quelle; keine Echtzeitwerte</span></div><div class="card table-wrap">${macroTable()}</div>
+  <section class="card method-link"><h2>Historische Muster einordnen</h2><p>Die drei dokumentierten Jahresfolgen sind ein mechanisches Modell. Ihre Fortschreibung ist keine nachgewiesene Vorhersage von Krisen oder Marktwendepunkten.</p><a href="#cycles">Modell und Grenzen ansehen →</a></section>`;
 }
 function macroTable() {
   return `<table><caption>Einheitliche Eingaben: Inflation % p.a., Rüstung und BIP in Mrd. USD; Stand ${escape(data.asOf)}</caption><thead><tr><th>Land</th><th>Inflation</th><th>Rüstungsetat</th><th>BIP</th></tr></thead><tbody>${data.macro.map((m) => `<tr><th scope="row">${escape(m.country)}</th>${["inflation", "military", "gdp"].map((k) => `<td>${m[k] === null ? "Nicht verfügbar" : fmt(m[k])}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+}
+function planningNavigation(current) {
+  return `<nav class="planning-nav" aria-label="Planungswerkzeuge"><a href="#purchasingpower" ${current === "power" ? 'aria-current="page"' : ""}>Kaufkraft berechnen</a><a href="#structure" ${current === "structure" ? 'aria-current="page"' : ""}>Struktur prüfen</a></nav>`;
+}
+function powerResults(result, context) {
+  return `<p class="small muted">${escape(context)} · Beträge in derselben Recheneinheit wie Ihre Eingabe.</p><dl class="result-grid">
+    <div class="result-item"><dt>Verbleibende Kaufkraft des unveränderten Geldbetrags</dt><dd>${fmt(result.remainingPower)}</dd></div>
+    <div class="result-item"><dt>Geldbetrag für dieselbe Kaufkraft</dt><dd>${fmt(result.requiredAmount)}</dd></div>
+    <div class="result-item"><dt>Änderung des Preisniveaus</dt><dd>${fmt(result.priceChangePercent)} %</dd></div>
+    <div class="result-item"><dt>${result.lossPercent >= 0 ? "Kaufkraftverlust" : "Kaufkraftgewinn"}</dt><dd>${fmt(Math.abs(result.lossPercent))} %</dd></div></dl>
+    <p class="small muted">Der nominale Geldbetrag bleibt ${fmt(result.amount)}. Zinsen, Renditen, Wechselkurse, Steuern und persönliche Ausgaben sind nicht einbezogen.</p>`;
+}
+function purchasingPowerView() {
+  const years = data.cpi.map((p) => p.year);
+  if (!years.includes(historyFrom)) historyFrom = years[0];
+  if (!years.includes(historyTo)) historyTo = years.at(-1);
+  return (
+    title(
+      "PLANUNG",
+      "Kaufkraft sichtbar machen.",
+      "Ein unveränderter Geldbetrag kann über die Zeit weniger oder mehr kaufen. Berechnen Sie den Effekt für Ihren Betrag.",
+    ) +
+    planningNavigation("power") +
+    `<div class="planning-grid"><section class="card planning-form"><p class="eyebrow">01 / HISTORISCHE BERECHNUNG</p><h2>Was zeigt der Verbraucherpreisindex?</h2>
+    <p class="small muted">CPI: ${escape(data.cpiRegion)} · ${escape(data.source)} · Stand ${escape(data.asOf)}. Der verwendete CPI bestimmt die Kaufkraftperspektive; es findet keine Währungsumrechnung statt.</p>
+    <label for="history-amount">Betrag in CPI-Bezugswährung</label><input id="history-amount" type="number" min="0.01" max="1000000000000" step="any" value="${escape(historyAmount)}" inputmode="decimal">
+    <div class="row"><div><label for="history-from">Von Jahr</label><select id="history-from">${years.map((y) => `<option value="${y}" ${y === historyFrom ? "selected" : ""}>${y}</option>`).join("")}</select></div>
+    <div><label for="history-to">Bis Jahr</label><select id="history-to">${years.map((y) => `<option value="${y}" ${y === historyTo ? "selected" : ""}>${y}</option>`).join("")}</select></div></div>
+    <p class="help">Nur vorhandene CPI-Jahre, ohne Interpolation. Das Endjahr muss nach dem Startjahr liegen.</p><div id="history-result" aria-live="polite"></div></section>
+    <section class="card planning-form"><p class="eyebrow">02 / EIGENES SZENARIO</p><h2>Was wäre bei anhaltender Inflation?</h2><p class="small muted">Ihre Annahme wird für jedes Jahr konstant fortgeschrieben. Das ist eine Modellrechnung und keine Prognose.</p>
+    <label for="scenario-amount">Geldbetrag (eigene Recheneinheit)</label><input id="scenario-amount" type="number" min="0.01" max="1000000000000" step="any" value="${escape(scenarioAmount)}" inputmode="decimal">
+    <div class="row"><div><label for="scenario-rate">Inflation pro Jahr (%)</label><input id="scenario-rate" type="number" min="-50" max="100" step="any" value="${escape(scenarioRate)}" inputmode="decimal"></div>
+    <div><label for="scenario-years">Zeitraum (Jahre)</label><input id="scenario-years" type="number" min="1" max="100" step="1" value="${escape(scenarioYears)}" inputmode="numeric"></div></div>
+    <div id="scenario-result" aria-live="polite"></div></section></div>
+    <section class="card"><h2>Vom Rechenergebnis zur nächsten Frage</h2><p>Welche Ausgaben, Rücklagen oder Verpflichtungen sind von dieser Kaufkraftentwicklung betroffen? Der Strukturcheck hilft Ihnen, offene Fragen für ein Gespräch oder eine eigene Prüfung festzuhalten.</p><a class="button secondary" href="#structure">Meinen Strukturcheck öffnen</a></section>`
+  );
+}
+function updatePower() {
+  const readValue = (id) => {
+    const input = $(id);
+    if (!input.value.trim()) throw Error("Bitte alle Felder ausfüllen.");
+    return Number(input.value);
+  };
+  historyAmount = $("#history-amount").value;
+  historyFrom = Number($("#history-from").value);
+  historyTo = Number($("#history-to").value);
+  scenarioAmount = $("#scenario-amount").value;
+  scenarioRate = $("#scenario-rate").value;
+  scenarioYears = $("#scenario-years").value;
+  try {
+    const result = purchasingPower(
+      data,
+      readValue("#history-amount"),
+      historyFrom,
+      historyTo,
+    );
+    $("#history-result").innerHTML = powerResults(
+      result,
+      `CPI ${data.cpiRegion}: ${historyFrom}–${historyTo}`,
+    );
+  } catch (error) {
+    $("#history-result").innerHTML =
+      `<p class="error" role="alert">${escape(error.message)}</p>`;
+  }
+  try {
+    const result = inflationScenario(
+      readValue("#scenario-amount"),
+      readValue("#scenario-rate"),
+      readValue("#scenario-years"),
+    );
+    $("#scenario-result").innerHTML = powerResults(
+      result,
+      `Szenario: ${scenarioYears} Jahre bei ${scenarioRate} % pro Jahr – keine Prognose`,
+    );
+  } catch (error) {
+    $("#scenario-result").innerHTML =
+      `<p class="error" role="alert">${escape(error.message)}</p>`;
+  }
+}
+const planStatuses = [
+  ["unreviewed", "Noch nicht geprüft"],
+  ["documented", "Dokumentiert"],
+  ["needs_action", "Klärungsbedarf"],
+  ["not_applicable", "Nicht zutreffend"],
+];
+function structureView() {
+  return (
+    title(
+      "PLANUNG",
+      "Struktur vor Entscheidung.",
+      "Prüfen Sie Ihre Handlungsfähigkeit anhand der CRISIS-Dossiers. Sie dokumentieren den eigenen Stand – das ist keine Bewertung Ihres Vermögens.",
+    ) +
+    planningNavigation("structure") +
+    `<p class="notice">Angaben bleiben lokal in diesem Browser. Geben Sie keine Kontonummern, Zugangsdaten oder vertraulichen Bestände ein. Antworten werden erst mit „Lokal speichern“ dauerhaft gespeichert.</p>
+  ${planError ? `<p class="error" role="alert">${escape(planError)} Der gespeicherte Inhalt bleibt bis zu Ihrer ausdrücklichen Löschung erhalten.</p>` : ""}
+  <section class="card"><h2>Meine Strukturfragen</h2><div id="plan-summary" class="structure-summary" aria-live="polite"></div>
+  ${planning.questions
+    .map(
+      (
+        q,
+      ) => `<article class="checklist-item"><fieldset><legend>${escape(q.title)}: ${escape(q.text)}</legend><div class="checklist-options">${planStatuses.map(([status, label]) => `<label><input type="radio" name="plan-${q.id}" value="${status}" ${plan.answers[q.id].status === status ? "checked" : ""}>${label}</label>`).join("")}</div></fieldset>
+    <p class="small muted">${escape(q.why)} · Bezug: ${escape(q.source)}</p><label class="note-label" for="note-${q.id}">Notiz zu ${escape(q.title)} (maximal 500 Zeichen)</label><textarea id="note-${q.id}" data-plan-note="${q.id}" maxlength="500">${escape(plan.answers[q.id].note)}</textarea></article>`,
+    )
+    .join("")}
+  <div class="planning-form"><label for="plan-action">Mein nächster Klärungsschritt</label><textarea id="plan-action" maxlength="1000">${escape(plan.action)}</textarea>
+  <div class="row"><div><label for="plan-owner">Zuständig / Gesprächspartner (optional)</label><input id="plan-owner" maxlength="80" value="${escape(plan.owner)}"></div>
+  <div><label for="plan-review">Erneut prüfen am (optional)</label><input id="plan-review" type="date" min="1800-01-01" max="2200-12-31" value="${escape(plan.reviewDate)}"></div></div></div>
+  <div class="actions"><button id="save-plan">Lokal speichern</button><button id="export-plan" class="secondary">Gesprächsnotiz exportieren</button><button id="delete-plan" class="secondary">Lokale Angaben löschen</button></div><p id="plan-result" role="status">${escape(planMessage)}</p></section>`
+  );
+}
+function readPlan() {
+  const next = {
+    schemaVersion: 1,
+    answers: {},
+    action: $("#plan-action").value,
+    owner: $("#plan-owner").value,
+    reviewDate: $("#plan-review").value,
+  };
+  for (const q of planning.questions)
+    next.answers[q.id] = {
+      status: $(`[name="plan-${q.id}"]:checked`)?.value ?? "unreviewed",
+      note: $(`#note-${q.id}`).value,
+    };
+  return validatePlan(next, planning.questions);
+}
+function showPlanMessage(message) {
+  planMessage = message;
+  const element = $("#plan-result");
+  if (element) element.textContent = message;
+}
+function updatePlanSummary() {
+  try {
+    plan = readPlan();
+    const summary = planSummary(plan, planning.questions);
+    $("#plan-summary").textContent =
+      `${summary.reviewed} von ${summary.total} bearbeitet · ${summary.documented} dokumentiert · ${summary.needs_action} mit Klärungsbedarf · ${summary.unreviewed} noch nicht geprüft · ${summary.not_applicable} nicht zutreffend. Eigene Bestandsaufnahme, kein Risikoscore.`;
+  } catch (error) {
+    showPlanMessage(error.message);
+  }
 }
 function comparison() {
   return (
@@ -216,7 +400,10 @@ function draw() {
     const ss = compare(data, selection, from, to, real);
     const vals = ss.flatMap((s) => s.points.map((p) => p.value)),
       lo = Math.min(...vals) * 0.9,
-      hi = Math.max(...vals) <= Number.MAX_VALUE/1.1 ? Math.max(...vals)*1.1 : Math.max(...vals);
+      hi =
+        Math.max(...vals) <= Number.MAX_VALUE / 1.1
+          ? Math.max(...vals) * 1.1
+          : Math.max(...vals);
     const start = ss[0].points[0].year,
       end = ss[0].points.at(-1).year,
       x = (y) => 60 + ((y - start) / (end - start)) * 700,
@@ -231,7 +418,7 @@ function draw() {
         })
         .join(
           "",
-        )}${ss.map((s, i) => `<polyline fill="none" stroke="${colors[i%colors.length]}" stroke-width="2.5" points="${s.points.map((p) => x(p.year) + "," + y(p.value)).join(" ")}"/>`).join("")}<text x="60" y="292">${start}</text><text x="725" y="292">${end}</text></svg><div class="legend">${ss.map((s, i) => `<span><i class="dot color-${i%colors.length}"></i>${escape(s.name)}</span>`).join("")}</div><div class="table-wrap"><table><caption>Ergebnisse ${data.kind === "demo" ? "(synthetisch)" : ""}</caption><thead><tr><th>Asset</th><th>Originaleinheit</th><th>Startindex</th><th>Endindex</th><th>Änderung</th></tr></thead><tbody>${ss.map((s) => `<tr><th scope="row">${escape(s.name)}</th><td>${escape(s.unit)}</td><td>100</td><td>${fmt(s.points.at(-1).value)}</td><td>${fmt(s.points.at(-1).value - 100)} %</td></tr>`).join("")}</tbody></table></div>`;
+        )}${ss.map((s, i) => `<polyline fill="none" stroke="${colors[i % colors.length]}" stroke-width="2.5" points="${s.points.map((p) => x(p.year) + "," + y(p.value)).join(" ")}"/>`).join("")}<text x="60" y="292">${start}</text><text x="725" y="292">${end}</text></svg><div class="legend">${ss.map((s, i) => `<span><i class="dot color-${i % colors.length}"></i>${escape(s.name)}</span>`).join("")}</div><div class="table-wrap"><table><caption>Ergebnisse ${data.kind === "demo" ? "(synthetisch)" : ""}</caption><thead><tr><th>Asset</th><th>Originaleinheit</th><th>Startindex</th><th>Endindex</th><th>Änderung</th></tr></thead><tbody>${ss.map((s) => `<tr><th scope="row">${escape(s.name)}</th><td>${escape(s.unit)}</td><td>100</td><td>${fmt(s.points.at(-1).value)}</td><td>${fmt(s.points.at(-1).value - 100)} %</td></tr>`).join("")}</tbody></table></div>`;
     $("#export").disabled = false;
     $("#export").onclick = () =>
       saveDownload(csv(ss), "text/csv;charset=utf-8", "crisis-vergleich.csv");
@@ -265,7 +452,9 @@ function cycles() {
 }
 function inspectYear() {
   const y = Number($("#focus-year").value);
-  document.querySelectorAll('[data-year]').forEach(el=>el.classList.remove('selected'));
+  document
+    .querySelectorAll("[data-year]")
+    .forEach((el) => el.classList.remove("selected"));
   if (!Number.isInteger(y) || y < 1926 || y > 2126) {
     $("#year-result").textContent =
       "Bitte ein Jahr zwischen 1926 und 2126 eingeben.";
@@ -312,7 +501,7 @@ function settings() {
       "Ihre Perspektive. Ihre Daten.",
       "Lokale Konfiguration ohne Konto, Tracking oder Cloudspeicherung.",
     ) +
-    marketPanel()+
+    marketPanel() +
     `<div class="grid"><section class="card controls"><h2>White-Label Branding</h2><label for="partner-name">Berater / Partnername</label><input id="partner-name" maxlength="60" value="${escape(config.partner)}" placeholder="Name Ihrer Beratung"><label for="theme">Akzentfarbe</label><select id="theme"><option value="navy">Midnight Blue</option><option value="teal">Teal Mist (dunkler UI-Akzent)</option><option value="rose">Rusty Rose (dunkler UI-Akzent)</option></select><div class="actions"><button id="save-brand">Branding speichern</button></div><p class="small muted">Das CRISIS-Original bleibt unverändert. Partnername und Akzent werden lokal gespeichert.</p></section><section class="card controls"><h2>Daten importieren</h2><p class="small">JSON-Schema v1 · maximal 2 MB. Keine Zugangsdaten importieren. Bestandsdaten werden erst nach erfolgreicher Prüfung ersetzt.</p><label for="data-file">Datendatei auswählen</label><input id="data-file" type="file" accept=".json,application/json"><div class="actions"><button id="template" class="secondary">Beispieldatei laden</button><button id="reset" class="secondary">Beispieldaten wiederherstellen</button></div><p class="small muted">Eigene Daten werden im Browser gespeichert. Auf gemeinsam genutzten Geräten können andere Personen darauf zugreifen.</p></section><section class="card"><h2>Markenpalette</h2><div class="swatches"><span class="rose">Rose</span><span class="teal">Teal</span></div><p class="small muted">Midnight Blue #0f1c3d<br>Rusty Rose #e8b9c8<br>Teal Mist #c7e8e3</p><a href="#library">Brandguide und Farben ansehen →</a></section></div><p id="settings-result" role="status">${escape(settingsMessage)}</p>`
   );
 }
@@ -320,13 +509,19 @@ function legal() {
   return `<article class="legal">${title("RECHTLICH", "Impressum", "Angaben aus dem bereitgestellten Brandguide; vor Veröffentlichung zu bestätigen.")}<h2>ALL I AM Akademie</h2><p>Akademie für ganzheitliche Persönlichkeits- & Projektentwicklung<br>Ein Bereich des Herzenskraft e.V.<br>Kreuzkirchstrasse 17<br>77652 Offenburg</p><p>Vertreten durch Alexander Avsar, Präsident<br><a href="mailto:info@aia.berlin">info@aia.berlin</a><br><a href="https://www.aia.berlin/crisis">www.aia.berlin/crisis</a></p><h2>Redaktioneller Hinweis</h2><p>Die Inhalte dienen der Information. Die Dossiers vertreten die Sicht der Herausgeber. Zyklusmodelle haben keine nachgewiesene Prognosegüte und begründen keine Anlageempfehlung. Historische Wertentwicklung erlaubt keine verlässliche Aussage über künftige Ergebnisse.</p><p>Registerangaben, Verantwortlichkeit und gegebenenfalls weitere Pflichtangaben sind vor einer öffentlichen Bereitstellung durch den Betreiber zu ergänzen.</p></article>`;
 }
 function privacy() {
-  return `<article class="legal">${title("RECHTLICH", "Datenschutz", "Hinweise für den vorliegenden lokalen Funktionsumfang.")}<p>Die Anwendung verwendet keine Analyse-, Werbe- oder Trackingdienste und setzt keine Cookies. Branding und importierte Datensätze werden ausschließlich im lokalen Speicher dieses Browsers gespeichert. Es werden keine Daten an einen CRISIS-Server übermittelt.</p><p>Mit „Beispieldaten wiederherstellen“ werden importierte Daten entfernt. Browserdaten können vollständig über die Browsereinstellungen gelöscht werden. CSV-Exporte enthalten nur die ausgewählten Vergleichswerte.</p><p>Externe Quellen und PDF-Dateien öffnen Sie bewusst. Bei externen Quellen gelten die Datenschutzbedingungen des jeweiligen Anbieters. Ein Webhoster kann technische Zugriffsdaten verarbeiten. Aufbewahrung, Rechtsgrundlage, Betroffenenrechte und Kontaktdaten des Verantwortlichen sind vor Veröffentlichung an den tatsächlichen Betrieb anzupassen.</p><a href="#legal">Betreiberangaben</a></article>`;
+  return `<article class="legal">${title("RECHTLICH", "Datenschutz", "Hinweise für den vorliegenden lokalen Funktionsumfang.")}
+  <p>Die Anwendung verwendet keine Analyse-, Werbe- oder Trackingdienste und setzt keine Cookies. Branding, importierte Datensätze und ausdrücklich gespeicherte Strukturchecks liegen im lokalen Speicher dieses Browsers. Persönliche Eingaben werden nicht an einen CRISIS-Server übertragen.</p>
+  <p>Die Kaufkraftrechner verarbeiten Eingaben nur während der Nutzung. Der Strukturcheck wird erst über „Lokal speichern“ dauerhaft gesichert. Seine Angaben können im Strukturcheck über „Lokale Angaben löschen“ entfernt werden. Auf gemeinsam genutzten Geräten können andere Personen die lokalen Daten einsehen.</p>
+  <p>Mit „Beispieldaten wiederherstellen“ werden importierte Marktdaten ersetzt. Browserdaten können vollständig über die Browsereinstellungen gelöscht werden. Exporte erstellen nur die von Ihnen gewählte lokale Datei; beim Strukturcheck enthält sie Ihre Antworten, Notizen und Angaben zum nächsten Schritt.</p>
+  <p>Ein ausdrücklich ausgelöster Marktdatenabruf kontaktiert den Datenadapter; der Adapter fragt externe Anbieter ab. Ihre Planungsangaben und importierten Bestände werden dabei nicht übermittelt. Externe Quellen und PDF-Dateien öffnen Sie bewusst. Bei externen Quellen gelten die Datenschutzbedingungen des jeweiligen Anbieters. Ein Webhoster kann technische Zugriffsdaten verarbeiten. Aufbewahrung, Rechtsgrundlage, Betroffenenrechte und Kontaktdaten des Verantwortlichen sind vor Veröffentlichung an den tatsächlichen Betrieb anzupassen.</p><a href="#legal">Betreiberangaben</a></article>`;
 }
 function render() {
   const route = location.hash.slice(1) || "home",
     views = {
       home,
       compare: comparison,
+      purchasingpower: purchasingPowerView,
+      structure: structureView,
       cycles,
       library,
       settings,
@@ -334,7 +529,7 @@ function render() {
       privacy,
     };
   $("#main").innerHTML = (
-    views[route] ||
+    (Object.hasOwn(views,route)?views[route]:null) ||
     (() =>
       title(
         "404",
@@ -342,17 +537,81 @@ function render() {
         "Bitte die Hauptnavigation verwenden.",
       ))
   )();
-  if(route==='home'){
-    $('#main').insertAdjacentHTML('beforeend',quotesPanel());
-    const macroStatus=$('#main .section-heading .small.muted');
-    if(macroStatus&&data.kind!=='demo')macroStatus.textContent='Berichtsdaten laut Quelle; keine Echtzeitwerte';
-    if(data.kind!=='demo')$('#main .badge.demo')?.classList.remove('demo');
+  if (route === "home") {
+    $("#main").insertAdjacentHTML("beforeend", quotesPanel());
+    const macroStatus = $("#main .section-heading .small.muted");
+    if (macroStatus && data.kind !== "demo")
+      macroStatus.textContent =
+        "Berichtsdaten laut Quelle; keine Echtzeitwerte";
+    if (data.kind !== "demo") $("#main .badge.demo")?.classList.remove("demo");
   }
   document.querySelectorAll("nav a").forEach((a) => {
     a.removeAttribute("aria-current");
-    if (a.hash === "#" + route) a.setAttribute("aria-current", "page");
+    if (
+      a.hash === "#" + route ||
+      (a.hash === "#purchasingpower" && route === "structure")
+    )
+      a.setAttribute("aria-current", "page");
   });
-  document.title = `CRISIS © · ${{ home: "Übersicht", compare: "Vergleich", cycles: "Zyklen", library: "Wissen", settings: "Einstellungen", legal: "Impressum", privacy: "Datenschutz" }[route] || "404"}`;
+  document.title = `CRISIS © · ${{ home: "Übersicht", compare: "Vergleich", purchasingpower: "Kaufkraft", structure: "Strukturcheck", cycles: "Zyklen", library: "Wissen", settings: "Einstellungen", legal: "Impressum", privacy: "Datenschutz" }[route] || "404"}`;
+  if (route === "purchasingpower") {
+    document
+      .querySelectorAll(".planning-form input,.planning-form select")
+      .forEach((input) => input.addEventListener("input", updatePower));
+    updatePower();
+  }
+  if (route === "structure") {
+    document
+      .querySelectorAll(
+        ".checklist-item input,.checklist-item textarea,.planning-form input,.planning-form textarea",
+      )
+      .forEach((input) =>
+        input.addEventListener("input", () => {
+          updatePlanSummary();
+          showPlanMessage("Änderungen noch nicht gespeichert.");
+        }),
+      );
+    $("#save-plan").disabled = !!planError;
+    $("#save-plan").onclick = () => {
+      try {
+        const next = readPlan();
+        storage.set("crisis-plan", JSON.stringify(next));
+        plan = next;
+        planError = "";
+        showPlanMessage("Strukturcheck lokal gespeichert.");
+      } catch (error) {
+        showPlanMessage(error.message);
+      }
+    };
+    $("#export-plan").onclick = () => {
+      try {
+        const next = readPlan();
+        saveDownload(
+          planningReport(next, planning.questions, {
+            partner: config.partner,
+            generatedAt: new Date().toISOString(),
+          }),
+          "text/plain;charset=utf-8",
+          "crisis-strukturcheck.txt",
+        );
+        showPlanMessage("Gesprächsnotiz exportiert.");
+      } catch (error) {
+        showPlanMessage(error.message);
+      }
+    };
+    $("#delete-plan").onclick = () => {
+      try {
+        storage.remove("crisis-plan");
+        plan = emptyPlan(planning.questions);
+        planError = "";
+        planMessage = "Lokale Angaben gelöscht.";
+        render();
+      } catch (error) {
+        showPlanMessage(error.message);
+      }
+    };
+    updatePlanSummary();
+  }
   if (route === "compare") {
     document
       .querySelectorAll(".controls input")
@@ -368,9 +627,14 @@ function render() {
     docs();
   }
   if (route === "settings") {
-    $("#load-history").onclick=()=>loadMarketData(false);
-    $("#refresh-market").onclick=()=>loadMarketData(true);
-    $("#export-data").onclick=()=>saveDownload(JSON.stringify(data,null,2),'application/json','crisis-daten.json');
+    $("#load-history").onclick = () => loadMarketData(false);
+    $("#refresh-market").onclick = () => loadMarketData(true);
+    $("#export-data").onclick = () =>
+      saveDownload(
+        JSON.stringify(data, null, 2),
+        "application/json",
+        "crisis-daten.json",
+      );
     $("#theme").value = config.theme;
     $("#save-brand").onclick = () => {
       try {
@@ -393,10 +657,13 @@ function render() {
         "crisis-beispieldaten.json",
       );
     $("#reset").onclick = () => {
-      try{
+      try {
         installData(structuredClone(demo));
-        settingsMessage="Beispieldaten wiederhergestellt.";render();
-      }catch(e){setMessage(e.message)}
+        settingsMessage = "Beispieldaten wiederhergestellt.";
+        render();
+      } catch (e) {
+        setMessage(e.message);
+      }
     };
     $("#data-file").onchange = async (e) => {
       try {
@@ -408,30 +675,57 @@ function render() {
         setMessage("Datensatz geprüft und importiert.");
       } catch (e) {
         setMessage("Import abgelehnt: " + e.message);
-      }finally{e.target.value=''}
+      } finally {
+        e.target.value = "";
+      }
     };
   }
 }
 try {
   let history;
-  [content, demo,history] = await Promise.all(
-    ["content", "demo-data","market-data"].map(async (n) => {
+  [content, demo, history, planning] = await Promise.all(
+    ["content", "demo-data", "market-data", "planning"].map(async (n) => {
       const r = await fetch(`assets/${n}.json`);
       if (!r.ok) throw Error("Unterlagen nicht erreichbar.");
       return r.json();
     }),
   );
   validateData(demo);
+  plan = emptyPlan(planning.questions);
+  try {
+    const savedPlan = storage.get("crisis-plan");
+    if (savedPlan)
+      plan = validatePlan(JSON.parse(savedPlan), planning.questions);
+  } catch (error) {
+    planError =
+      "Der gespeicherte Strukturcheck konnte nicht gelesen werden: " +
+      error.message;
+  }
   data = validateData(history);
-  provenance={provider:history.source,fetchedAt:history.metadata?.fetchedAt,notes:['Gebündelter historischer Datenbestand; kein Live-Kurs.',history.metadata?.coverage??'']};
+  provenance = {
+    provider: history.source,
+    fetchedAt: history.metadata?.fetchedAt,
+    notes: [
+      "Gebündelter historischer Datenbestand; kein Live-Kurs.",
+      history.metadata?.coverage ?? "",
+    ],
+  };
   try {
     const stored = storage.get("crisis-data");
-    if (stored){const parsed=JSON.parse(stored);data=validateData(parsed.data??parsed);provenance=parsed.provenance??null;}
-  }catch{
-    setMessage('Der gespeicherte Datensatz ist ungültig. Der historische Datenbestand wurde geladen.');
-    try{storage.remove('crisis-data')}catch{}
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      data = validateData(parsed.data ?? parsed);
+      provenance = parsed.provenance ?? null;
+    }
+  } catch {
+    setMessage(
+      "Der gespeicherte Datensatz ist ungültig. Der historische Datenbestand wurde geladen.",
+    );
+    try {
+      storage.remove("crisis-data");
+    } catch {}
   }
-  try{
+  try {
     const b = JSON.parse(storage.get("crisis-brand"));
     if (
       b &&
@@ -439,11 +733,19 @@ try {
       ["navy", "rose", "teal"].includes(b.theme)
     )
       config = { partner: b.partner.slice(0, 60), theme: b.theme };
-  } catch {config={partner:'',theme:'navy'}}
+  } catch {
+    config = { partner: "", theme: "navy" };
+  }
   selection = data.series.slice(0, 2).map((s) => s.id);
-  const years=data.series.flatMap(s=>s.points.map(p=>p.year));from=Math.min(...years);to=Math.max(...years);
+  const years = data.series.flatMap((s) => s.points.map((p) => p.year));
+  from = Math.min(...years);
+  to = Math.max(...years);
   applyConfig();
-  window.addEventListener("hashchange", ()=>{render();$('#main').focus({preventScroll:true});window.scrollTo(0,0)});
+  window.addEventListener("hashchange", () => {
+    render();
+    $("#main").focus({ preventScroll: true });
+    window.scrollTo(0, 0);
+  });
   render();
 } catch (e) {
   $("#main").innerHTML =

@@ -13,6 +13,8 @@ func number(_ n: Double) -> String { n.formatted(.number.locale(Locale(identifie
  @Published var data: MarketData
  let content: Content
  let demoBytes: Data
+ let planning: PlanningDocument
+ @Published var plan: PersonalPlan
  @Published var partner: String { didSet { preferences.set(String(partner.prefix(60)), forKey: "partner") } }
  @Published var theme: String { didSet { preferences.set(theme, forKey: "theme") } }
  @Published var revision = 0
@@ -20,19 +22,26 @@ func number(_ n: Double) -> String { n.formatted(.number.locale(Locale(identifie
  @Published var refreshing = false
  @Published var provenance: MarketProvenance?
  private let file: URL
+ private let planFile: URL
  private let preferences: UserDefaults
  init(preferences: UserDefaults = .standard, directory: URL? = nil) throws {
   self.preferences = preferences
-  guard let c = Bundle.main.url(forResource: "content", withExtension: "json"), let d = Bundle.main.url(forResource: "demo-data", withExtension: "json"), let history = Bundle.main.url(forResource: "market-data", withExtension: "json") else { throw CrisisError(message: "Gebündelte Daten fehlen.") }
+  guard let c = Bundle.main.url(forResource: "content", withExtension: "json"), let d = Bundle.main.url(forResource: "demo-data", withExtension: "json"), let history = Bundle.main.url(forResource: "market-data", withExtension: "json"), let planningFile = Bundle.main.url(forResource: "planning", withExtension: "json") else { throw CrisisError(message: "Gebündelte Daten fehlen.") }
   content = try JSONDecoder().decode(Content.self, from: Data(contentsOf: c)); demoBytes = try Data(contentsOf: d)
+  planning = try JSONDecoder().decode(PlanningDocument.self, from: Self.readBounded(planningFile))
   let folder = try directory ?? FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
   try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
   file = folder.appendingPathComponent("market.json")
+  planFile = folder.appendingPathComponent("planning.json")
   var loadWarning = ""
   if FileManager.default.fileExists(atPath: file.path) {
    do { let restored = try Self.decodeStored(Self.readBounded(file, limit: 3 * 1024 * 1024)); data = restored.data; provenance = restored.provenance }
    catch { data = try CrisisEngine.parse(Self.readBounded(history)); loadWarning = "Gespeicherte Daten konnten nicht gelesen werden. Historische Daten werden angezeigt; die gespeicherte Datei bleibt erhalten." }
   } else { data = try CrisisEngine.parse(Self.readBounded(history)) }
+  if FileManager.default.fileExists(atPath: planFile.path) {
+   do { plan = try PlanningEngine.parse(Self.readBounded(planFile, limit: 32 * 1024), document: planning) }
+   catch { plan = PlanningEngine.empty(planning); loadWarning += " Gespeicherter Strukturcheck ist ungültig; die Originaldatei bleibt erhalten. Ein leerer Entwurf wird angezeigt." }
+  } else { plan = PlanningEngine.empty(planning) }
   partner = String((preferences.string(forKey: "partner") ?? "").prefix(60))
   let savedTheme = preferences.string(forKey: "theme") ?? "navy"
   theme = ["navy", "rose", "teal"].contains(savedTheme) ? savedTheme : "navy"
@@ -94,6 +103,25 @@ func number(_ n: Double) -> String { n.formatted(.number.locale(Locale(identifie
   } catch { message = "Aktualisierung fehlgeschlagen; bisherige Daten bleiben erhalten: \(error.localizedDescription)" }
  }
  func reset() { do { try save(CrisisEngine.parse(demoBytes)); message = "Beispieldaten wiederhergestellt." } catch { message = error.localizedDescription } }
+ func savePlan() {
+  do {
+   try PlanningEngine.validate(plan, document: planning)
+   let bytes = try JSONEncoder().encode(plan)
+   guard bytes.count <= 32 * 1024 else { throw CrisisError(message: "Strukturcheck ist zu groß.") }
+   try bytes.write(to: planFile, options: .atomic)
+   var storageURL = planFile
+   var flags = URLResourceValues(); flags.isExcludedFromBackup = true
+   try storageURL.setResourceValues(flags)
+   message = "Strukturcheck lokal gespeichert. Die Angaben werden nicht an den Datenadapter übertragen."
+  } catch { message = "Strukturcheck konnte nicht gespeichert werden: \(error.localizedDescription)" }
+ }
+ func deletePlan() {
+  do {
+   if FileManager.default.fileExists(atPath: planFile.path) { try FileManager.default.removeItem(at: planFile) }
+   plan = PlanningEngine.empty(planning)
+   message = "Gespeicherter Strukturcheck und der aktuelle Entwurf wurden gelöscht."
+  } catch { message = "Strukturcheck konnte nicht gelöscht werden: \(error.localizedDescription)" }
+ }
 }
 
 @main @MainActor struct CrisisApp: App {
@@ -108,6 +136,8 @@ func number(_ n: Double) -> String { n.formatted(.number.locale(Locale(identifie
      defaults.removePersistentDomain(forName: suite)
      let dataFile = folder.appendingPathComponent("market.json")
      if FileManager.default.fileExists(atPath: dataFile.path) { try FileManager.default.removeItem(at: dataFile) }
+     let planFile = folder.appendingPathComponent("planning.json")
+     if FileManager.default.fileExists(atPath: planFile.path) { try FileManager.default.removeItem(at: planFile) }
     }
     return try CrisisStore(preferences: defaults, directory: folder)
    }
@@ -178,11 +208,23 @@ struct HomeView: View {
  @EnvironmentObject var store: CrisisStore
  var body: some View { Screen(title: "Übersicht") {
   Text("MAKRO-INTELLIGENZ FÜR VERMÖGENSSCHUTZ").font(.caption)
-  Text("Erkennen, was 90% übersehen.").font(.largeTitle)
-  Text("Märkte verstehen. Muster hinterfragen. Werte schützen.")
+  Text("Vermögen verstehen. Handlungsfähig bleiben.").font(.largeTitle)
+  Text("Kaufkraft sichtbar machen, Werte vergleichen und den nächsten eigenen Schritt dokumentieren.")
+  Panel(title: "Ihr nächster Schritt") {
+   NavigationLink("Kaufkraft prüfen") { PurchasingPowerView() }.accessibilityIdentifier("home-purchasing-power")
+   NavigationLink("Werte vergleichen") { ComparisonView() }.accessibilityIdentifier("home-compare")
+   NavigationLink("Strukturcheck beginnen") { StructureCheckView() }.accessibilityIdentifier("home-structure")
+  }
   DataNotice(d: store.data)
+  Text("Geladene Reihen: \(store.data.series.map(\.name).joined(separator: ", ")).").font(.footnote)
+  let groups = Set(store.data.series.map { $0.group.lowercased() })
+  let missing = [("Aktien", "aktien"),("Immobilien", "immobilien")].filter { !groups.contains($0.1) }.map { $0.0 }
+  if !missing.isEmpty { Text("\(missing.joined(separator: " und ")) sind im geladenen Datensatz nicht enthalten. Zusätzliche lizenzierte Reihen können als JSON importiert werden.").font(.caption).foregroundStyle(.secondary) }
   QuotesView()
-  Panel(title: "1926 — 2126") { Text("100 Jahre Rückblick und 100 Jahre reine Modellfortschreibung. Keine Kursprognose."); NavigationLink("Zyklen entdecken") { CycleView() } }
+  Panel(title: "Daten und zeitliche Orientierung") {
+   Text("CPI-Beobachtungen: \(store.data.cpi.first?.year ?? 0)–\(store.data.cpi.last?.year ?? 0) · \(store.data.cpiRegion). Jahresmodelle sind eine zusätzliche Perspektive, keine Kursprognose.")
+   NavigationLink("Zyklen entdecken") { CycleView() }
+  }
   Panel(title: "Gold-Silber-Ratio") { if let r = CrisisEngine.ratio(store.data) { Text("\(number(r.value)) : 1 · \(r.year)").font(.title) } else { Text("Nicht verfügbar") }; Text(store.data.kind == "demo" ? "Rechenbeispiel, kein Marktwert." : "Nur bei gleicher Währung und Einheit.").font(.footnote) }
   Text("Die Welt als Wirkungsfeld.").font(.title2)
   ForEach(store.content.fields) { f in Panel(title: f.title) { Text(f.text) } }
@@ -265,6 +307,10 @@ struct SettingsView: View {
  @AppStorage("market-adapter-url") private var adapter = ""
  var body: some View { Screen(title: "Einstellungen") {
   Text("Ihre Perspektive. Ihre Daten.").font(.largeTitle)
+  Panel(title: "Planung") {
+   NavigationLink("Kaufkraft prüfen") { PurchasingPowerView() }.accessibilityIdentifier("more-purchasing-power")
+   NavigationLink("Strukturcheck") { StructureCheckView() }.accessibilityIdentifier("more-structure")
+  }
   Panel(title: "White-Label Branding") {
    TextField("Berater / Partnername", text: $store.partner).textFieldStyle(.roundedBorder).accessibilityIdentifier("partner-name").onChange(of: store.partner) { s in if s.count > 60 { store.partner = String(s.prefix(60)) } }
    Picker("Akzentfarbe", selection: $store.theme) { Text("Midnight Blue").tag("navy"); Text("Teal Mist").tag("teal"); Text("Rusty Rose").tag("rose") }
@@ -295,6 +341,7 @@ struct LegalView: View {
   Text("Angaben aus dem Brandguide. Register- und weitere Pflichtangaben sind vor Veröffentlichung zu bestätigen.")
   Text("Datenschutz").font(.title)
   Text("Keine Cookies, kein Tracking, kein Konto. Importierte Daten und Branding bleiben lokal auf diesem Gerät. Bei ausdrücklich gewählter Aktualisierung ruft die App Markt-JSON vom konfigurierten HTTPS-Adapter ab; dabei erhält der Server technische Verbindungsdaten wie die IP-Adresse. Importierte Dateien und Branding werden dabei nicht hochgeladen. Exporte und externe Links öffnen Sie bewusst. Für externe Anbieter gelten deren eigene Datenschutzbedingungen. Importierte Daten können über die Wiederherstellung gelöscht werden; alle lokalen Daten durch Löschen der App. Diese Hinweise sind vor Veröffentlichung an den tatsächlichen Betrieb anzupassen.")
+  Text("Der Strukturcheck kann persönliche Notizen, einen nächsten Schritt, eine verantwortliche Person und einen Prüftermin enthalten. Diese Angaben bleiben im lokalen Entwurf und werden erst mit „Lokal speichern“ in einer privaten, vom Betriebssystem-Backup ausgeschlossenen Datei gespeichert. Der Datenadapter erhält diese Angaben nie. Mit „Strukturcheck löschen“ entfernen Sie den lokalen Check und den aktuellen Entwurf. Exportierte TXT-Berichte können persönliche Angaben enthalten; deren Ablage und Weitergabe bestimmen Sie selbst.")
   Text("Die Dossiers vertreten die Sicht der Herausgeber. Zyklusmodelle haben keine nachgewiesene Prognosegüte und begründen keine Anlageempfehlung. Historische Wertentwicklung erlaubt keine verlässliche Aussage über künftige Ergebnisse.")
  }.padding() }.navigationTitle("Rechtliches") }
 }

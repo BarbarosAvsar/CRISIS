@@ -20,5 +20,5 @@ data={'schemaVersion':1,'kind':'demo','asOf':'2026-01-01','source':'Synthetische
 for name,obj in [('content',content),('demo-data',data)]:
  (R/'shared'/f'{name}.json').write_text(json.dumps(obj,ensure_ascii=False,indent=2)+'\n')
 for d in [R/'web/assets',R/'android/app/src/main/assets',R/'ios/CRISIS/Resources']:
- for f in ['content.json','demo-data.json']:shutil.copy(R/'shared'/f,d/f)
+ for f in ['content.json','demo-data.json','planning.json']:shutil.copy(R/'shared'/f,d/f)
 for d in [R/'android/app/src/main/assets',R/'ios/CRISIS/Resources']:shutil.copy(R/'web/assets/logo.png',d/'logo.png')

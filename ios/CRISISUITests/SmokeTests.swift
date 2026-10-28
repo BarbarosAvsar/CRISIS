@@ -25,7 +25,7 @@ final class SmokeTests: XCTestCase {
  }
 
  func testOverviewAndCycleYear() {
-  XCTAssertTrue(app.staticTexts["Erkennen, was 90% übersehen."].waitForExistence(timeout: 10))
+  XCTAssertTrue(app.staticTexts["Vermögen verstehen. Handlungsfähig bleiben."].waitForExistence(timeout: 10))
   tab("Zyklen")
   replace(app.textFields["cycle-year"], with: "2032")
   app.swipeUp()
@@ -59,5 +59,47 @@ final class SmokeTests: XCTestCase {
   let label = app.staticTexts["partner-label"]
   XCTAssertTrue(label.waitForExistence(timeout: 10))
   XCTAssertEqual(label.label, "In Kooperation mit UI Test Beratung")
+ }
+ func testKaufkraftScenarioAndInvalidInput() {
+  tab("Mehr")
+  app.buttons["more-purchasing-power"].tap()
+  let result = app.descendants(matching: .any)["power-scenario-result"].firstMatch
+  for _ in 0..<12 where !result.isHittable { app.swipeUp() }
+  XCTAssertTrue(result.waitForExistence(timeout: 10))
+  XCTAssertTrue(result.label.contains("7.440,94"))
+  let rate = app.textFields["scenario-rate"]
+  for _ in 0..<4 where !rate.isHittable { app.swipeDown() }
+  replace(rate, with: "101")
+  app.swipeUp()
+  XCTAssertTrue(app.descendants(matching: .any)["power-scenario-error"].firstMatch.waitForExistence(timeout: 10))
+ }
+ func testStructureCheckSaveRelaunchAndDelete() {
+  tab("Mehr")
+  app.buttons["more-structure"].tap()
+  let note = app.descendants(matching: .any)["plan-note-liquidity"].firstMatch
+  for _ in 0..<8 where !note.isHittable { app.swipeUp() }
+  replace(note, with: "Reservezugang gemeinsam prüfen")
+  let save = app.buttons["plan-save"]
+  for _ in 0..<16 where !save.isHittable { app.swipeUp() }
+  XCTAssertTrue(save.isHittable)
+  save.tap()
+  XCTAssertTrue(app.alerts["CRISIS"].waitForExistence(timeout: 10))
+  app.alerts.buttons["OK"].tap()
+  app.terminate()
+  app.launchEnvironment["CRISIS_RESET_STATE"] = "0"
+  app.launch()
+  tab("Mehr")
+  app.buttons["more-structure"].tap()
+  let restored = app.descendants(matching: .any)["plan-note-liquidity"].firstMatch
+  for _ in 0..<8 where !restored.isHittable { app.swipeUp() }
+  XCTAssertEqual(restored.value as? String, "Reservezugang gemeinsam prüfen")
+  let delete = app.buttons["plan-delete"]
+  for _ in 0..<16 where !delete.isHittable { app.swipeUp() }
+  delete.tap()
+  app.buttons["Strukturcheck endgültig löschen"].tap()
+  XCTAssertTrue(app.alerts["CRISIS"].waitForExistence(timeout: 10))
+  app.alerts.buttons["OK"].tap()
+  for _ in 0..<16 where !restored.isHittable { app.swipeDown() }
+  XCTAssertNotEqual(restored.value as? String, "Reservezugang gemeinsam prüfen")
  }
 }

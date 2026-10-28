@@ -7,9 +7,10 @@ objects=[]
 def obj(k,v):objects.append(f'{ID(k)} = {{ {v} }};');return ID(k)
 def arr(xs):return '('+','.join(xs)+(',)' if xs else ')')
 files={}
-for name,typ in [('CRISIS/CrisisApp.swift','sourcecode.swift'),('CRISIS/Models.swift','sourcecode.swift'),('CRISIS/LiveDataClient.swift','sourcecode.swift'),('CRISISTests/EngineTests.swift','sourcecode.swift'),('CRISISUITests/SmokeTests.swift','sourcecode.swift'),('CRISIS/Resources/content.json','text.json'),('CRISIS/Resources/demo-data.json','text.json'),('CRISIS/Resources/market-data.json','text.json'),('CRISIS/Resources/logo.png','image.png'),('CRISIS/Resources/Assets.xcassets','folder.assetcatalog'),('CRISIS/Resources/PrivacyInfo.xcprivacy','text.xml'),('CRISISTests/golden-data.json','text.json')]:
+for name,typ in [('CRISIS/CrisisApp.swift','sourcecode.swift'),('CRISIS/Models.swift','sourcecode.swift'),('CRISIS/PlanningModels.swift','sourcecode.swift'),('CRISIS/PlanningViews.swift','sourcecode.swift'),('CRISIS/LiveDataClient.swift','sourcecode.swift'),('CRISISTests/EngineTests.swift','sourcecode.swift'),('CRISISUITests/SmokeTests.swift','sourcecode.swift'),('CRISIS/Resources/content.json','text.json'),('CRISIS/Resources/demo-data.json','text.json'),('CRISIS/Resources/market-data.json','text.json'),('CRISIS/Resources/planning.json','text.json'),('CRISIS/Resources/logo.png','image.png'),('CRISIS/Resources/Assets.xcassets','folder.assetcatalog'),('CRISIS/Resources/PrivacyInfo.xcprivacy','text.xml'),('CRISISTests/golden-data.json','text.json'),('CRISISTests/planning-vectors.json','text.json')]:
  files[name]=obj(name,f'isa = PBXFileReference; lastKnownFileType = {typ}; path = "{name}"; sourceTree = "<group>";')
 shutil.copy(r/'shared/golden-data.json',base/'CRISISTests/golden-data.json')
+shutil.copy(r/'shared/planning-vectors.json',base/'CRISISTests/planning-vectors.json')
 appProduct=obj('product-app','isa = PBXFileReference; explicitFileType = wrapper.application; path = CRISIS.app; sourceTree = BUILT_PRODUCTS_DIR;')
 testProduct=obj('product-tests','isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = CRISISTests.xctest; sourceTree = BUILT_PRODUCTS_DIR;')
 uiProduct=obj('product-ui-tests','isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = CRISISUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR;')
@@ -18,10 +19,10 @@ main=obj('main',f'isa = PBXGroup; children = {arr(list(files.values())+[products
 def phase(key,isa,paths):
  builds=[obj(key+p,f'isa = PBXBuildFile; fileRef = {files[p]};') for p in paths]
  return obj(key,f'isa = {isa}; buildActionMask = 2147483647; files = {arr(builds)}; runOnlyForDeploymentPostprocessing = 0;')
-aSrc=phase('app-sources','PBXSourcesBuildPhase',['CRISIS/CrisisApp.swift','CRISIS/Models.swift','CRISIS/LiveDataClient.swift'])
-aRes=phase('app-resources','PBXResourcesBuildPhase',['CRISIS/Resources/content.json','CRISIS/Resources/demo-data.json','CRISIS/Resources/market-data.json','CRISIS/Resources/logo.png','CRISIS/Resources/PrivacyInfo.xcprivacy','CRISIS/Resources/Assets.xcassets'])
+aSrc=phase('app-sources','PBXSourcesBuildPhase',['CRISIS/CrisisApp.swift','CRISIS/Models.swift','CRISIS/PlanningModels.swift','CRISIS/PlanningViews.swift','CRISIS/LiveDataClient.swift'])
+aRes=phase('app-resources','PBXResourcesBuildPhase',['CRISIS/Resources/content.json','CRISIS/Resources/demo-data.json','CRISIS/Resources/market-data.json','CRISIS/Resources/planning.json','CRISIS/Resources/logo.png','CRISIS/Resources/PrivacyInfo.xcprivacy','CRISIS/Resources/Assets.xcassets'])
 tSrc=phase('test-sources','PBXSourcesBuildPhase',['CRISISTests/EngineTests.swift'])
-tRes=phase('test-resources','PBXResourcesBuildPhase',['CRISIS/Resources/content.json','CRISIS/Resources/demo-data.json','CRISISTests/golden-data.json'])
+tRes=phase('test-resources','PBXResourcesBuildPhase',['CRISIS/Resources/content.json','CRISIS/Resources/demo-data.json','CRISIS/Resources/planning.json','CRISISTests/golden-data.json','CRISISTests/planning-vectors.json'])
 uSrc=phase('ui-sources','PBXSourcesBuildPhase',['CRISISUITests/SmokeTests.swift'])
 frameworksA=phase('app-frameworks','PBXFrameworksBuildPhase',[]);frameworksT=phase('test-frameworks','PBXFrameworksBuildPhase',[]);frameworksU=phase('ui-frameworks','PBXFrameworksBuildPhase',[])
 def configs(target):
