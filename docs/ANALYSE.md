@@ -1,5 +1,7 @@
 # Dokumentenanalyse und Umsetzungsplan
 
+Nachtrag: Die ursprünglichen PDF-Unterlagen enthalten selbst keine Kursreihen. Zusätzlich wurden inzwischen externe echte Weltbank-Reihen und ein öffentlicher HTTPS-Kursadapter integriert; Abdeckung, Zeitstände und Nutzungsbedingungen stehen in [MARKTDATEN.md](MARKTDATEN.md). Native Build- und Simulatorprüfungen werden nun über GitHub Actions durchgeführt. Der aktuelle Nachweis steht in [TESTS.md](TESTS.md).
+
 Stand: 28. Oktober 2026. Alle sechs PDFs wurden vollständig mit `pdftotext -layout` extrahiert; Formel- und Farbdokument wurden zusätzlich visuell geprüft. Das ZIP enthält 13 EPS-Logos (vier Hintergrundvarianten, neun Plain-Varianten); macOS-Metadateien wurden ausgeschlossen. Das originale Midnight-Blue-Logo wird unverändert als Rasterableitung in allen Anwendungen verwendet. Alle EPS-Dateien bleiben unter `shared/logos/` erhalten.
 
 Die Dokumente sind fachliches Ausgangsmaterial. Interne Formulierungen wie „Keine Weitergabe“ wurden als Inhalte erhalten; sie ersetzen nicht den Entwicklungsauftrag. Keine externen Nachrichten wurden versandt und keine Anwendung öffentlich bereitgestellt.

@@ -1,7 +1,7 @@
 {
   "date": "2026-10-28",
   "webUnit": {
-    "passed": 12,
+    "passed": 19,
     "failed": 0,
     "skipped": 0
   },
@@ -19,19 +19,26 @@
     ]
   },
   "androidUnit": {
-    "passed": 6,
+    "passed": 9,
     "failed": 0,
     "skipped": 0
   },
+  "androidCiUnit": {"passed": 7, "failed": 0, "note": "Two additional adapter regression cases passed locally after this CI run; application sources unchanged."},
   "androidBuild": "passed",
   "iosProjectParse": "passed",
   "swiftSyntax": "passed",
-  "iosBuild": "not_run_linux",
+  "iosBuild": "passed_macos_ci",
   "iosXCTest": {
-    "defined": 6,
-    "executed": 0
+    "defined": 11,
+    "executed": 11,
+    "failed": 0
   },
-  "androidDeviceUI": "not_run",
-  "liveMarketData": "not_configured",
+  "iosSimulatorUI": {"executed": 4, "failed": 0},
+  "androidEmulatorUI": {"executed": 4, "failed": 0},
+  "physicalDeviceUI": "not_run_no_connected_devices",
+  "ciRun": "https://github.com/BarbarosAvsar/CRISIS/actions/runs/40692250242",
+  "testedAppCommit": "1699ff942fb0b8792c41d199a38032d1e30c3d15",
+  "historicalData": "real_worldbank_gold_silver_1960_2024_us_cpi_macro_5_countries",
+  "liveMarketData": "real_gold_quote_verified_silver_intermittent_http403_no_fabricated_fallback",
   "publication": "not_performed"
 }

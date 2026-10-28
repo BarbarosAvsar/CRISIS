@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuite name="berlin.aia.crisis.NativeFlowTest" tests="4" failures="0" errors="0" skipped="0" time="15.461" timestamp="2026-10-28T13:00:59" hostname="localhost">
+  <properties>
+    <property name="device" value="emulator-5554 - 15" />
+    <property name="flavor" value="" />
+    <property name="project" value=":app" />
+  </properties>
+  <testcase name="genuineSnapshotPersistsAndRejectedImportKeepsData" classname="berlin.aia.crisis.NativeFlowTest" time="5.169" />
+  <testcase name="cycleEntrySurvivesActivityRecreationAndTabNavigation" classname="berlin.aia.crisis.NativeFlowTest" time="2.554" />
+  <testcase name="documentSearchSurvivesRecreation" classname="berlin.aia.crisis.NativeFlowTest" time="2.671" />
+  <testcase name="comparisonShowsUsefulEmptySelectionAndYearErrors" classname="berlin.aia.crisis.NativeFlowTest" time="2.772" />
+</testsuite>

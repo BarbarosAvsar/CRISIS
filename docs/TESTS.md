@@ -1,6 +1,26 @@
 # Verifikation
 
-Prüfstand: 28. Oktober 2026. Diese Ergebnisse beziehen sich auf die aktuelle Linux-Cloud-Instanz. Veröffentlichung oder Wiederherstellung in einem neuen Task wurde nicht geprüft.
+## Aktueller Nachtest
+
+Prüfstand: 28. Oktober 2026. Die lokalen Prüfungen wurden durch echte GitHub-Runner ergänzt. Der App-Code ist auf `main`; es gibt keine zusätzlichen Entwicklungsbranches. Cloud- oder Store-Veröffentlichung wurde nicht ausgeführt.
+
+| Prüfung | Ergebnis | Nachweis |
+| --- | --- | --- |
+| Web-/Datenadaptertests | 19 bestanden | `npm test`; echte Historienbundles, Quellenmetadaten, getrennte Einzelkurse, Cache, Ausfälle und Zahlenüberlauf |
+| Browser, Desktop/Mobil | Bestanden, zusätzlich GitHub-Webjob erfolgreich | Historische Standarddaten, Import, Suche, CSV, Branding, Zustandswiederherstellung und sichtbarer HTTP-503-Fehler ohne Datenverlust |
+| Android Build, JVM, Lint | Build erfolgreich; 9 JVM-Tests bestanden; Lint ohne Fehler | `docs/verification/android-tests.xml` und `android-lint.xml`; Hinweise auf neuere Abhängigkeiten bleiben sichtbar |
+| Android native UI | 4 Tests auf Android-15-Emulator bestanden, keine übersprungen | `docs/verification/android-ui-tests.xml`; [GitHub-Lauf](https://github.com/BarbarosAvsar/CRISIS/actions/runs/40691889323) |
+| iOS Build, XCTest, UI | Nativ kompiliert; 11 Unit- und 4 UI-Tests auf iPhone-17-Pro-Simulator bestanden | [Erfolgreicher GitHub-Lauf](https://github.com/BarbarosAvsar/CRISIS/actions/runs/40692250242), App-Commit `1699ff9`; Xcode 26.6, Simulator iOS 26.4.1 |
+| Historische Daten | Echte Beobachtungen gebündelt | Gold/Silber 1960–2024, 65 US-CPI-Werte, Makroindikatoren für fünf Länder; siehe `MARKTDATEN.md` |
+| Aktueller Feed | Echter Goldkurs samt Zeitstempel abgerufen; Silber antwortete zeitweise HTTP 403 | Getrennte Darstellung, kein Einmischen in Jahresreihen; anbieterseitige oder Cloud-Netzwerkausfälle werden angezeigt |
+
+Physische iPhone-/Android-Geräte sind nicht angeschlossen. Emulator-/Simulatorergebnisse sind keine Prüfung auf echter Hardware. Native Datei- und Teilen-Dialoge, VoiceOver/TalkBack und eine vollständige Geräteabnahme bleiben manuell zu prüfen. Aktien-/Immobilienfeeds, 100 Jahre echte Marktdaten und empirisch validierte Krisenprognosen sind weiterhin nicht durch die integrierten Quellen abgedeckt.
+
+Reproduktion: `npm test`, mit laufendem Server `npm run test:browser`, `./tools/android.sh :app:testDebugUnitTest :app:connectedDebugAndroidTest` mit verbundenem Android-Gerät/Emulator; auf macOS `./tools/test-ios.sh`. Der iOS-Runner bootet den Simulator, führt beide XCTest-Targets aus und erhält das `.xcresult`. Er meldet Linux ausdrücklich als nicht unterstützt, ohne einen übersprungenen Test als bestanden zu zählen.
+
+## Archiv: Erstprüfung vor dem Nachtest
+
+Die folgenden Angaben dokumentieren den ursprünglichen Stand vor Einbindung der echten Daten und vor Ausführung der nativen GitHub-Tests. Sie werden durch den aktuellen Nachtest oben ergänzt und sind keine aktuellen Bereitschaftsaussagen.
 
 ## Ausgeführt
 

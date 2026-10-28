@@ -48,7 +48,7 @@ xcodebuild -project CRISIS.xcodeproj -scheme CRISIS \
   -destination 'platform=iOS Simulator,name=iPhone 16' test
 ```
 
-Den Simulatornamen gegebenenfalls mit `xcrun simctl list devices available` ermitteln. Ein iOS-Build und Simulatorlauf sind in der Linux-Cloud **nicht verifiziert**.
+Den Simulatornamen gegebenenfalls mit `xcrun simctl list devices available` ermitteln. Alternativ führt `./tools/test-ios.sh` aus dem Projektordner Build, Unit- und UI-Tests im Simulator aus und erhält das `.xcresult`. Native macOS-/Simulatornachweise stehen in `docs/TESTS.md`; die lokale Linux-Maschine selbst kann Xcode nicht ausführen.
 
 ## Funktionen auf allen Plattformen
 

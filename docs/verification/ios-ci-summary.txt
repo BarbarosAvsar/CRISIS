@@ -1,0 +1,18 @@
+Native iOS verification, 2026-10-28
+Run: https://github.com/BarbarosAvsar/CRISIS/actions/runs/40692250242
+App commit: 1699ff942fb0b8792c41d199a38032d1e30c3d15
+Runner: macos-latest, Xcode 26.6
+Destination: iPhone 17 Pro, iOS Simulator 26.4.1, arm64
+
+CRISISTests.EngineTests: 11 executed, 0 failures.
+Includes testServerProvenanceAcceptsNotesStringAndFailedQuote: passed.
+CRISISUITests.SmokeTests: 4 executed, 0 failures.
+testBrandingPersistsAfterRelaunch: passed.
+testComparisonRejectsReversedRange: passed.
+testDocumentSearchEmptyState: passed.
+testOverviewAndCycleYear: passed.
+
+2026-10-28T13:09:15.4443070Z ** TEST SUCCEEDED **
+All three workflow jobs (web, android, ios): success.
+Full xcresult is retained as the ios-test-results workflow artifact.
+This is simulator verification, not a physical iPhone test.

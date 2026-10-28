@@ -3,6 +3,21 @@ import org.junit.Test
 import org.junit.Assert.*
 import java.io.File
 class EngineTest {
+ @Test fun liveWrapperPreservesHistoryAndProvenance(){
+  val payload=org.json.JSONObject().put("data",org.json.JSONObject(fixture("golden-data.json")))
+   .put("provenance",org.json.JSONObject().put("notes","Annual history remains separate.").put("stale",true)
+    .put("quotes",org.json.JSONArray().put(org.json.JSONObject().put("symbol","XAG").put("error","HTTP 403"))))
+  val reply=LiveDataClient.parseReply(payload.toString())
+  assertEquals("import",reply.data.kind)
+  assertEquals("HTTP 403",reply.provenance!!.getJSONArray("quotes").getJSONObject(0).getString("error"))
+  assertEquals(reply.data,LiveDataClient.parseStored(reply.json).data)
+  assertEquals("Annual history remains separate.",LiveDataClient.parseStored(reply.json).provenance!!.getString("notes"))
+ }
+ @Test fun liveEndpointRejectsCredentialsAndInsecureTransport(){
+  for(url in listOf("http://example.org/api/data","https://user:password@example.org/api/data","https://example.org/api/data?token=secret","https://example.org/api/data#fragment"))
+   assertThrows(IllegalArgumentException::class.java){LiveDataClient.endpoint(url)}
+  assertEquals("example.org",LiveDataClient.endpoint("https://example.org/api/data").host)
+ }
  private fun fixture(name:String)=File(System.getProperty("crisis.shared"),name).readText()
  @Test fun documentedCycles(){val c=CrisisEngine.content(fixture("content.json"));assertEquals(listOf(1911,1927,1945,1965,1981,1999,2019),CrisisEngine.years(c.cycles[0],1911,2019));assertEquals(listOf(1918,1926,1935,1945,1953,1962,1972,1980,1989,1999,2007,2016,2026),CrisisEngine.years(c.cycles[1],1918,2026));assertEquals(listOf(1924,1931,1942,1951,1958,1969,1978,1985,1996,2005,2012,2023,2032),CrisisEngine.years(c.cycles[2],1924,2032));assertEquals(6,c.documents.size)}
  @Test fun bundledDataAndNormalization(){val d=CrisisEngine.parse(fixture("demo-data.json"));assertEquals(10,d.series.size);val ss=CrisisEngine.compare(d,setOf("gold","dax"),1926,2026,false);assertEquals(100.0,ss.first().points.first().value,1e-9);val real=CrisisEngine.compare(d,setOf("gold"),1926,2026,true);assertTrue(real.first().points.last().value<ss.first().points.last().value);assertNotNull(CrisisEngine.ratio(d));assertTrue(CrisisEngine.csv(ss).contains("Asset;Jahr;Index"))}

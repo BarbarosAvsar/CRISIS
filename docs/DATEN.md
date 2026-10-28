@@ -1,5 +1,7 @@
 # Datenvertrag und Berechnungen
 
+Der neue echte Basisbestand und der HTTPS-Kursadapter sind in [MARKTDATEN.md](MARKTDATEN.md) dokumentiert. `shared/market-data.json` enthält Weltbank-Beobachtungen, während die unten aufgeführten Beispiel- und Referenzdateien weiterhin synthetische Rechenfälle sind. Aktuelle Einzelkurse kommen als optionale `provenance.quotes` neben `data`; sie werden nicht in jährliche Vergleichspunkte umgewandelt.
+
 ## Import v1
 
 `shared/data.schema.json` beschreibt die Struktur. `shared/demo-data.json` ist eine vollständig synthetische Beispieldatei, `shared/golden-data.json` ein kleiner Rechenreferenzfall. Auf allen Plattformen über **Einstellungen → Daten importieren** laden. Höchstens 2 MiB UTF-8, 30 Reihen, 401 Jahreswerte pro Reihe/CPI. Eine erfolgreiche Prüfung ersetzt den gesamten vorherigen Datensatz; Fehler erhalten den Bestand. Eigene Daten verwenden `kind: "import"`, Beispiele `kind: "demo"`.

@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="berlin.aia.crisis.EngineTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-28T10:25:39.820Z" hostname="e825c2387ecf" time="0.262">
+<testsuite name="berlin.aia.crisis.EngineTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-10-28T13:00:17.846Z" hostname="5f5c71f820bc" time="0.154">
   <properties/>
-  <testcase name="goldenCpi" classname="berlin.aia.crisis.EngineTest" time="0.088"/>
-  <testcase name="documentedCycles" classname="berlin.aia.crisis.EngineTest" time="0.049"/>
-  <testcase name="rejectsInvalid" classname="berlin.aia.crisis.EngineTest" time="0.066"/>
-  <testcase name="csvEscaping" classname="berlin.aia.crisis.EngineTest" time="0.005"/>
-  <testcase name="bundledDataAndNormalization" classname="berlin.aia.crisis.EngineTest" time="0.032"/>
-  <testcase name="strictNumericAndCalendarValidation" classname="berlin.aia.crisis.EngineTest" time="0.016"/>
+  <testcase name="goldenCpi" classname="berlin.aia.crisis.EngineTest" time="0.05"/>
+  <testcase name="documentedCycles" classname="berlin.aia.crisis.EngineTest" time="0.024"/>
+  <testcase name="rejectsInvalid" classname="berlin.aia.crisis.EngineTest" time="0.031"/>
+  <testcase name="liveWrapperPreservesHistoryAndProvenance" classname="berlin.aia.crisis.EngineTest" time="0.005"/>
+  <testcase name="csvEscaping" classname="berlin.aia.crisis.EngineTest" time="0.004"/>
+  <testcase name="liveEndpointRejectsCredentialsAndInsecureTransport" classname="berlin.aia.crisis.EngineTest" time="0.0"/>
+  <testcase name="bundledDataAndNormalization" classname="berlin.aia.crisis.EngineTest" time="0.027"/>
+  <testcase name="strictNumericAndCalendarValidation" classname="berlin.aia.crisis.EngineTest" time="0.008"/>
+  <testcase name="rejectsUnrepresentableCalculatedValues" classname="berlin.aia.crisis.EngineTest" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
