@@ -57,6 +57,8 @@ try {
   await page
     .getByRole("heading", { name: "Struktur vor Entscheidung." })
     .waitFor();
+  assert.equal(await page.locator('.planning-nav [aria-current=page]').count(),1);
+  assert.ok(await page.locator('[name=plan-liquidity][value=needs_action]').evaluate(el=>el.getBoundingClientRect().width<25));
   await page.locator("[name=plan-liquidity][value=needs_action]").check();
   await page
     .locator("#note-liquidity")

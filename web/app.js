@@ -549,7 +549,7 @@ function render() {
     a.removeAttribute("aria-current");
     if (
       a.hash === "#" + route ||
-      (a.hash === "#purchasingpower" && route === "structure")
+      (a.closest('header')&&a.hash === "#purchasingpower" && route === "structure")
     )
       a.setAttribute("aria-current", "page");
   });

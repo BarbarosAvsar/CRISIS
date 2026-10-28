@@ -269,7 +269,7 @@ p {
   font-size: 13px;
   font-weight: 600;
 }
-input:not([type="checkbox"]),
+input:not([type="checkbox"]):not([type="radio"]),
 select {
   width: 100%;
   padding: 10px;
@@ -659,6 +659,7 @@ header nav {
   gap: 16px;
   margin: 22px 0;
 }
+#history-result,#scenario-result{margin-top:18px}
 .result-item {
   border-top: 1px solid var(--line);
   padding-top: 12px;
