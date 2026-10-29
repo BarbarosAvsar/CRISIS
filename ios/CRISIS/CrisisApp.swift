@@ -150,12 +150,12 @@ struct RootView: View {
  @ObservedObject var store: CrisisStore
  var body: some View {
   TabView {
-   NavigationStack { HomeView().environmentObject(store) }.tabItem { Label("Übersicht", systemImage: "house") }
-   NavigationStack { ComparisonView().environmentObject(store) }.tabItem { Label("Vergleich", systemImage: "chart.xyaxis.line") }
-   NavigationStack { CycleView().environmentObject(store) }.tabItem { Label("Zyklen", systemImage: "clock") }
-   NavigationStack { LibraryView().environmentObject(store) }.tabItem { Label("Wissen", systemImage: "books.vertical") }
-   NavigationStack { SettingsView().environmentObject(store) }.tabItem { Label("Mehr", systemImage: "slider.horizontal.3") }
-  }.tint(store.accent).preferredColorScheme(.light)
+   NavigationStack { HomeView() }.tabItem { Label("Übersicht", systemImage: "house") }
+   NavigationStack { ComparisonView() }.tabItem { Label("Vergleich", systemImage: "chart.xyaxis.line") }
+   NavigationStack { CycleView() }.tabItem { Label("Zyklen", systemImage: "clock") }
+   NavigationStack { LibraryView() }.tabItem { Label("Wissen", systemImage: "books.vertical") }
+   NavigationStack { SettingsView() }.tabItem { Label("Mehr", systemImage: "slider.horizontal.3") }
+  }.environmentObject(store).tint(store.accent).preferredColorScheme(.light)
    .alert("CRISIS", isPresented: Binding(get: { !store.message.isEmpty }, set: { if !$0 { store.message = "" } })) { Button("OK") { store.message = "" } } message: { Text(store.message) }
  }
 }

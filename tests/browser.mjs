@@ -282,6 +282,13 @@ try {
   await page.locator("#partner-name").fill("");
   await page.getByRole("button", { name: "Branding speichern" }).click();
   await page.getByRole("link", { name: "Übersicht", exact: true }).click();
+  // Hash navigation renders on the subsequent hashchange event. Wait for the
+  // destination before checking content; click completion alone is too early.
+  await page
+    .getByRole("heading", {
+      name: "Vermögen verstehen. Handlungsfähig bleiben.",
+    })
+    .waitFor();
   assert.equal(await page.locator('#missing-market-groups').count(),0);
   assert.match(await page.locator('main').innerText(),/Synthetische Werte/);
   await page.setViewportSize({ width: 390, height: 844 });
@@ -306,12 +313,16 @@ try {
   await page
     .getByRole("link", { name: "Meinen Strukturcheck öffnen", exact: true })
     .click();
+  await page
+    .getByRole("heading", { name: "Struktur vor Entscheidung." })
+    .waitFor();
   assert.ok(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= window.innerWidth,
     ),
   );
   await page.getByRole("link", { name: "Vergleich", exact: true }).click();
+  await page.locator("#chart-result svg").waitFor();
   assert.ok(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= window.innerWidth,
