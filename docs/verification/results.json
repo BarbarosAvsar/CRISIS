@@ -1,7 +1,7 @@
 {
-  "date": "2026-10-28",
+  "date": "2026-10-29",
   "webUnit": {
-    "passed": 19,
+    "passed": 26,
     "failed": 0,
     "skipped": 0
   },
@@ -19,26 +19,29 @@
     ]
   },
   "androidUnit": {
-    "passed": 9,
+    "passed": 15,
     "failed": 0,
     "skipped": 0
   },
-  "androidCiUnit": {"passed": 7, "failed": 0, "note": "Two additional adapter regression cases passed locally after this CI run; application sources unchanged."},
+  "androidCiUnit": {"passed": 15, "failed": 0, "skipped": 0},
   "androidBuild": "passed",
   "iosProjectParse": "passed",
   "swiftSyntax": "passed",
   "iosBuild": "passed_macos_ci",
   "iosXCTest": {
-    "defined": 11,
-    "executed": 11,
+    "defined": 16,
+    "executed": 16,
     "failed": 0
   },
-  "iosSimulatorUI": {"executed": 4, "failed": 0},
-  "androidEmulatorUI": {"executed": 4, "failed": 0},
+  "iosSimulatorUI": {"executed": 6, "failed": 0},
+  "androidEmulatorUI": {"executed": 7, "failed": 0, "skipped": 0},
   "physicalDeviceUI": "not_run_no_connected_devices",
-  "ciRun": "https://github.com/BarbarosAvsar/CRISIS/actions/runs/40692250242",
-  "testedAppCommit": "1699ff942fb0b8792c41d199a38032d1e30c3d15",
+  "ciRun": "https://github.com/BarbarosAvsar/CRISIS/actions/runs/40834899046",
+  "testedAppCommit": "c8cd7a8d61138992e80abbdf1b37eadac5fbb629",
+  "planningCoverage": ["historical_cpi", "compound_scenario_and_deflation", "plan_validation", "local_save_restore_delete", "corrupt_data_preservation", "text_report"],
+  "apkSha256": "d4fe241e28918a83485180b9b41a86b80f12b14372b7a64586e12c04d04a0b54",
   "historicalData": "real_worldbank_gold_silver_1960_2024_us_cpi_macro_5_countries",
   "liveMarketData": "real_gold_quote_verified_silver_intermittent_http403_no_fabricated_fallback",
+  "liveMarketDataVerifiedAt": "2026-10-28",
   "publication": "not_performed"
 }

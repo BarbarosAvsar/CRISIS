@@ -44,6 +44,18 @@ Referenz: Preis 10→20, CPI 100→121, nominal 100→200, real 100→165,289256
 
 Gold-Silber-Ratio: der jüngste **gemeinsame** Jahrestermin der IDs `gold` und `silver`; Goldwert / Silberwert nur bei identischer Währung **und identischer Einheit**. Andernfalls nicht verfügbar. Kein Rückgriff auf unterschiedlich datierte letzte Werte.
 
+## Kaufkraft und eigene Inflationsannahmen
+
+Der historische Rechner verwendet zwei exakt vorhandene CPI-Jahre mit `Start < Ende`. Für Betrag `A` und Faktor `F = CPI(Ende) / CPI(Start)` zeigt er `A × F` als benötigten Endbetrag und `A / F` als Kaufkraft des unveränderten Betrags in Einheiten des Startjahres. Preisänderung: `(F − 1) × 100 %`; Kaufkraftverlust: `(1 − 1/F) × 100 %`. Bei Deflation wird der negative Verlust als Kaufkraftgewinn angezeigt. CPI-Region und Quellenstand bleiben sichtbar; es gibt keine Währungsumrechnung.
+
+Die separate Zukunftsrechnung verwendet ausschließlich die eigene Annahme `F = (1 + Jahresrate/100)^Jahre`. Sie ist keine Marktprognose. Betrag: größer null bis 10¹²; Rate: −50 bis 100 %; ganze Laufzeit: 1–100 Jahre. Faktor und Geldbeträge müssen endlich, positiv und höchstens 10¹⁵ sein. Gemeinsame Referenzfälle stehen in `shared/planning-vectors.json`; jede Plattform rechnet eigenständig.
+
+## Persönlicher Strukturcheck
+
+`shared/planning.json` enthält die fünf gemeinsamen Prüffragen und ihre Dokumentbezüge. Der persönliche Entwurf verwendet `schemaVersion: 1`, genau diese fünf IDs als Schlüssel in `answers`, je `status` und `note`, sowie `action`, `owner` und `reviewDate`. Zulässige Statuswerte sind `unreviewed`, `documented`, `needs_action` und `not_applicable`. Notizen sind auf 500, der nächste Schritt auf 1000 und die Zuständigkeit auf 80 UTF-16-Codeeinheiten begrenzt; das optionale Datum muss ein gültiges `JJJJ-MM-TT` sein. Gespeicherte native Dateien sind auf 32 KiB begrenzt.
+
+Bearbeitet sind alle Fragen außer `unreviewed`; offen sind `unreviewed` und `needs_action`. Diese Zählung beschreibt Arbeitsfortschritt, keine Krisenwahrscheinlichkeit. TXT-Berichte enthalten bewusst die eigenen Angaben, Quellenbezüge und den nächsten Prüfschritt. Sie enthalten keine automatisch abgeleitete Anlageempfehlung.
+
 ## Jahresmodell
 
 - Ereignisse: Start 1911, wiederholt +16, +18, +20.
@@ -52,10 +64,12 @@ Gold-Silber-Ratio: der jüngste **gemeinsame** Jahrestermin der IDs `gold` und `
 
 Die im PDF gedruckten Multiplikationszeichen können die Jahresreihen nicht erzeugen. Die implementierte Addition reproduziert sämtliche Beispiele einschließlich Hochpreisjahr 2026 und Tiefpreisjahr 2032. Die Anzeige 1926–2126 ist ein Kalender mechanischer Modelljahre. Sie modelliert keine Preisverläufe, Wahrscheinlichkeiten, Ereigniskausalität oder nachgewiesene Frühindikatoren. Ab 2027 explizit Szenario. Das Material enthält keinen Backtest und keine Definition eines messbaren Warnscores.
 
-## Künftiger Live-Anbieter
+## Voraussetzungen für weitere Datenanbieter
 
 Die Quellenliste ist eine redaktionelle Referenz. Für produktive Anbindung benötigt der Betreiber einen Anbieter mit Nutzungs-/Weiterverteilungsrechten, dokumentiertem API-Vertrag, Historientiefe, Einheiten, Aggregation, Aktualisierung, CPI- und Wechselkursmethodik. Die Anwendung kann den daraus erzeugten v1-Datensatz bereits konsumieren. Zugangsdaten gehören in einen gesicherten Serveradapter, niemals in Browser-/App-Bundles, Importdateien oder das Repository. Es wurden keine Anbieterzugänge angefordert, weil kein bestimmter API-Vertrag vorliegt.
 
 ## Speicherung
 
 Web: `crisis-data` und `crisis-brand` in localStorage. Android: private Datei `market.json`, Branding in SharedPreferences, Android-Backup deaktiviert. iOS: Application Support `market.json`, Branding in UserDefaults. Datensätze sind für öffentliche Marktdaten gedacht, nicht für persönliche Portfolios oder Geheimnisse; keine zusätzliche App-Verschlüsselung. Löschen: Beispieldaten wiederherstellen; Branding leeren bzw. App-/Browserdaten löschen. Exporte sind ausdrücklich vom Nutzer gewählte Dateien.
+
+Der persönliche Strukturcheck wird erst durch ausdrückliches Speichern dauerhaft abgelegt: Web `crisis-plan`, Android private Datei `structure-plan.json`, iOS Application Support `planning.json` (vom Backup ausgeschlossen). Beschädigte gespeicherte Angaben bleiben bis zur bewussten Bearbeitung oder Löschung erhalten. Die Checkliste wird getrennt und nach Bestätigung gelöscht; ein Marktdatenwechsel löscht sie nicht. Ihre Inhalte werden nicht an den Kursadapter übertragen.

@@ -1,18 +1,24 @@
-Native iOS verification, 2026-10-28
-Run: https://github.com/BarbarosAvsar/CRISIS/actions/runs/40692250242
-App commit: 1699ff942fb0b8792c41d199a38032d1e30c3d15
+Native iOS verification, 2026-10-29
+Run: https://github.com/BarbarosAvsar/CRISIS/actions/runs/40834899046
+App commit: c8cd7a8d61138992e80abbdf1b37eadac5fbb629
 Runner: macos-latest, Xcode 26.6
 Destination: iPhone 17 Pro, iOS Simulator 26.4.1, arm64
 
-CRISISTests.EngineTests: 11 executed, 0 failures.
-Includes testServerProvenanceAcceptsNotesStringAndFailedQuote: passed.
-CRISISUITests.SmokeTests: 4 executed, 0 failures.
+CRISISTests.EngineTests: 16 executed, 0 failures.
+Includes historical CPI, compound inflation/deflation, shared planning vectors,
+plan validation/counts/report, local save/restore/delete and corrupt file preservation.
+CRISISUITests.SmokeTests: 6 executed, 0 failures.
 testBrandingPersistsAfterRelaunch: passed.
 testComparisonRejectsReversedRange: passed.
 testDocumentSearchEmptyState: passed.
+testKaufkraftScenarioAndInvalidInput: passed.
 testOverviewAndCycleYear: passed.
+testStructureCheckSaveRelaunchAndDelete: passed.
 
-2026-10-28T13:09:15.4443070Z ** TEST SUCCEEDED **
+Raw log excerpts from native job 123317282243:
+2026-10-29T07:29:17.1395220Z Executed 16 tests, with 0 failures (0 unexpected) in 0.144 (0.214) seconds.
+2026-10-29T07:32:45.2385280Z Executed 6 tests, with 0 failures (0 unexpected) in 196.750 (196.756) seconds.
+2026-10-29T07:32:46.6461350Z ** TEST SUCCEEDED **
 All three workflow jobs (web, android, ios): success.
 Full xcresult is retained as the ios-test-results workflow artifact.
 This is simulator verification, not a physical iPhone test.

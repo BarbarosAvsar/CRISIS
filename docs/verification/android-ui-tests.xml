@@ -1,12 +1,15 @@
-<?xml version='1.0' encoding='UTF-8' ?>
-<testsuite name="berlin.aia.crisis.NativeFlowTest" tests="4" failures="0" errors="0" skipped="0" time="15.461" timestamp="2026-10-28T13:00:59" hostname="localhost">
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite name="berlin.aia.crisis.NativeFlowTest" tests="7" failures="0" errors="0" skipped="0" time="29.582" timestamp="2026-10-29T07:27:34" hostname="localhost">
   <properties>
     <property name="device" value="emulator-5554 - 15" />
     <property name="flavor" value="" />
     <property name="project" value=":app" />
   </properties>
-  <testcase name="genuineSnapshotPersistsAndRejectedImportKeepsData" classname="berlin.aia.crisis.NativeFlowTest" time="5.169" />
-  <testcase name="cycleEntrySurvivesActivityRecreationAndTabNavigation" classname="berlin.aia.crisis.NativeFlowTest" time="2.554" />
-  <testcase name="documentSearchSurvivesRecreation" classname="berlin.aia.crisis.NativeFlowTest" time="2.671" />
-  <testcase name="comparisonShowsUsefulEmptySelectionAndYearErrors" classname="berlin.aia.crisis.NativeFlowTest" time="2.772" />
+  <testcase name="genuineSnapshotPersistsAndRejectedImportKeepsData" classname="berlin.aia.crisis.NativeFlowTest" time="5.457" />
+  <testcase name="cycleEntrySurvivesActivityRecreationAndTabNavigation" classname="berlin.aia.crisis.NativeFlowTest" time="3.888" />
+  <testcase name="structureCheckExplicitlySavesAndDeletesLocalAnswers" classname="berlin.aia.crisis.NativeFlowTest" time="5.597" />
+  <testcase name="documentSearchSurvivesRecreation" classname="berlin.aia.crisis.NativeFlowTest" time="2.516" />
+  <testcase name="comparisonShowsUsefulEmptySelectionAndYearErrors" classname="berlin.aia.crisis.NativeFlowTest" time="3.646" />
+  <testcase name="assumptionCalculatorHandlesDeflationAndSurvivesRecreation" classname="berlin.aia.crisis.NativeFlowTest" time="4.189" />
+  <testcase name="corruptPlanWarnsWithoutOverwritingTheFile" classname="berlin.aia.crisis.NativeFlowTest" time="1.658" />
 </testsuite>

@@ -1,15 +1,28 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="berlin.aia.crisis.EngineTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-10-28T13:00:17.846Z" hostname="5f5c71f820bc" time="0.154">
-  <properties/>
-  <testcase name="goldenCpi" classname="berlin.aia.crisis.EngineTest" time="0.05"/>
-  <testcase name="documentedCycles" classname="berlin.aia.crisis.EngineTest" time="0.024"/>
-  <testcase name="rejectsInvalid" classname="berlin.aia.crisis.EngineTest" time="0.031"/>
-  <testcase name="liveWrapperPreservesHistoryAndProvenance" classname="berlin.aia.crisis.EngineTest" time="0.005"/>
-  <testcase name="csvEscaping" classname="berlin.aia.crisis.EngineTest" time="0.004"/>
-  <testcase name="liveEndpointRejectsCredentialsAndInsecureTransport" classname="berlin.aia.crisis.EngineTest" time="0.0"/>
-  <testcase name="bundledDataAndNormalization" classname="berlin.aia.crisis.EngineTest" time="0.027"/>
-  <testcase name="strictNumericAndCalendarValidation" classname="berlin.aia.crisis.EngineTest" time="0.008"/>
-  <testcase name="rejectsUnrepresentableCalculatedValues" classname="berlin.aia.crisis.EngineTest" time="0.001"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
+<?xml version='1.0' encoding='utf-8'?>
+<testsuites tests="15" failures="0" errors="0" skipped="0">
+  <testsuite name="berlin.aia.crisis.EngineTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-10-29T07:24:04.222Z" hostname="runnervm48cm3" time="0.277">
+    <properties />
+    <testcase name="goldenCpi" classname="berlin.aia.crisis.EngineTest" time="0.075" />
+    <testcase name="documentedCycles" classname="berlin.aia.crisis.EngineTest" time="0.036" />
+    <testcase name="rejectsInvalid" classname="berlin.aia.crisis.EngineTest" time="0.068" />
+    <testcase name="liveWrapperPreservesHistoryAndProvenance" classname="berlin.aia.crisis.EngineTest" time="0.016" />
+    <testcase name="csvEscaping" classname="berlin.aia.crisis.EngineTest" time="0.011" />
+    <testcase name="liveEndpointRejectsCredentialsAndInsecureTransport" classname="berlin.aia.crisis.EngineTest" time="0.0" />
+    <testcase name="bundledDataAndNormalization" classname="berlin.aia.crisis.EngineTest" time="0.047" />
+    <testcase name="strictNumericAndCalendarValidation" classname="berlin.aia.crisis.EngineTest" time="0.017" />
+    <testcase name="rejectsUnrepresentableCalculatedValues" classname="berlin.aia.crisis.EngineTest" time="0.002" />
+    <system-out />
+    <system-err />
+  </testsuite>
+  <testsuite name="berlin.aia.crisis.PlanningTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-29T07:24:04.503Z" hostname="runnervm48cm3" time="0.023">
+    <properties />
+    <testcase name="historicalUsesOnlyExactCPIObservations" classname="berlin.aia.crisis.PlanningTest" time="0.002" />
+    <testcase name="planRoundTripAndCountsHaveNoRiskScore" classname="berlin.aia.crisis.PlanningTest" time="0.007" />
+    <testcase name="invalidPlansAreRejectedInsteadOfPartiallySaved" classname="berlin.aia.crisis.PlanningTest" time="0.003" />
+    <testcase name="scenarioMatchesSharedVectorsAndHandlesDeflation" classname="berlin.aia.crisis.PlanningTest" time="0.001" />
+    <testcase name="extremeOrMalformedCalculatorInputsAreRejected" classname="berlin.aia.crisis.PlanningTest" time="0.003" />
+    <testcase name="reportContainsSourcesNotesAndConcreteNextStep" classname="berlin.aia.crisis.PlanningTest" time="0.006" />
+    <system-out />
+    <system-err />
+  </testsuite>
+</testsuites>
